@@ -102,10 +102,7 @@ class Libs extends Component
 			die("tidak");	
 		}
 		*/
-		
-		//$res = (!self::arrItemIn($modname,$nomodels) && !self::arrItemIn($app->requestedRoute,$noroutes));
-		
-										
+												
 		$res = true;
 		//if (!self::arrItemIn($modname,$nomodels) && !self::arrItemIn($app->requestedRoute,$noroutes))
 		if (!in_array($modname,$nomodels) && !in_array($app->requestedRoute,$noroutes))		
@@ -142,7 +139,7 @@ class Libs extends Component
 					if (!$record) {
 						if ($version->itemAlias("type",$eventName,true) != 1) {
 							$br = str_replace(basename($r),"",$r).$module->defaults["create"];
-							//$res = self::mkVersion($app,$version->itemAlias("type",1),$model,$br);							
+							
 							$eventName = $version->itemAlias("type",1);
 							$arr = $model->attributes;	
 							$atr = json_encode($arr);
@@ -238,9 +235,7 @@ class Libs extends Component
 					
 					if ($version->type == 1 && !$origin && !$version->isRoot())
 					{						
-						$version->makeRoot();	
-						//print_r($version->attributes);
-						//die();
+						$version->makeRoot();							
 					}
 					else
 					{
@@ -256,9 +251,6 @@ class Libs extends Component
 						$res = (!$origin->save()?false:$res);					
 					}
 					
-					
-					//print_r($version->getErrors());
-					//die($version->isNewRecord."tes".get_class($version));
 					$res = (!$version->save()?false:$res);
 					
 					
