@@ -1,0 +1,23 @@
+{
+    "name": "amilna/yii2-versioning",
+    "description": "Extensions for Yii2 for data versioning and watching",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension","versioning","data","crud","notif"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Satrio Arditama",
+            "email": "iyo@amilna.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*",
+        "sebastian/diff": "*",
+        "creocoder/yii2-nested-sets": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "amilna\\versioning\\": ""
+        }
+    }
+}
