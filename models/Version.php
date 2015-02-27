@@ -176,7 +176,7 @@ class Version extends \yii\db\ActiveRecord
 			$model = new $modelClass();					
 		}
 		
-		$parents = $this->parents()->orderBy("depth desc")->all();		
+		$parents = $this->parents()->orderBy("depth")->all();		
 		
 		$attributes = [];
 		foreach ($parents as $p)
