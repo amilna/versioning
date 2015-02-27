@@ -33,7 +33,7 @@ use kartik\datetime\DateTimePicker;
 
 	<div class='row'>
 		<div class='col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2'>
-			<?= $form->field($model, 'attributes')->textarea(['rows' => 6]) ?>
+			<?= $form->field($model, 'record_attributes')->textarea(['rows' => 6]) ?>
 		</div>
 	</div>
 

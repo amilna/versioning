@@ -11,9 +11,6 @@ use amilna\yap\GridView;
 $this->title = Yii::t('app', 'Versions');
 $this->params['breadcrumbs'][] = $this->title;
 
-$dataProvider->pagination = [
-	"pageSize"=>10	
-]
 ?>
 <div class="version-index">
 
@@ -65,10 +62,10 @@ $dataProvider->pagination = [
 		],
 		'floatHeader' => true,		
 		
-		/* uncomment to use megeer some columns
-        'mergeColumns' => ['Column 1','Column 2','Column 3'],
+		/* uncomment to use megeer some columns */
+        'mergeColumns' => ['time','routeUser'],
         'type'=>'firstrow', // or use 'simple'
-        */
+        
         
         'filterModel' => $searchModel,
         'columns' => [
@@ -92,7 +89,11 @@ $dataProvider->pagination = [
 								}',
 					],			
 				],
-			],       			
+			],
+			[                 			
+				'attribute'=>'routeUser',
+				'value' => 'route.user.username'
+            ],       			                                 
             [                 			
 				'attribute'=>'recordModel',
 				'format'=>'raw',
@@ -103,22 +104,17 @@ $dataProvider->pagination = [
 					foreach (json_decode($data->record_attributes) as $a=>$v)
 					{
 						$r = Html::encode(str_replace([",","/"],[", ","/ "],json_encode([$a=>$v])));						
-						$rtml = str_replace(substr($r,1,-1),str_replace(["{","}"],["<i style='color:blue'>","</i>"],$r),$rtml);						
+						$rtml = str_replace(substr($r,1,-1),str_replace(["{","}"],["<i class='text-danger'>","</i>"],$r),$rtml);						
 					}
-															
-					$html =  Html::a($data->record->model.":".$data->record->record_id,["//versioning/version/apply","id"=>$data->id],["title"=>Yii::t("app","Click to apply this version!"),"data"=>["confirm"=>Yii::t("app","Are you sure to apply this version?"),"method"=>"post"]]);
-					$html .= "<p><b>".Yii::t("app","Attributes")."</b>: ".
+																				
+					$html =  Html::tag("b",$data->record->model,["class"=>"text-primary"])."&nbsp;&nbsp;".Html::tag("span",$data->record->record_id,["class"=>"label label-primary"]);
+					$html .= "<p><small>".Yii::t("app","Route")."</small>: <i class='text-success'>".$data->route->route."</i><br>".
+							"<small>".Yii::t("app","Attributes")."</small>: ".
 							$rtml.
 							"</p>";
 					return $html;
 				}
-            ],
-            /*[
-				'attribute'=>'record_attributes',
-				'value'=> function($data) {
-					return str_replace("\\n","",$data->record_attributes);
-				}
-            ],*/
+            ],/*            
             [				
 				'attribute'=>'type',				
 				'value'=>function($data){										
@@ -133,15 +129,12 @@ $dataProvider->pagination = [
 					],
 					
 				],
-            ],
-            [                 			
-				'attribute'=>'routeUser',
-				'value' => 'route.user.username'
-            ],
+            ],*/
             [				
-				'attribute'=>'status',				
+				'attribute'=>'status',
+				'format'=>'raw',				
 				'value'=>function($data){										
-					return $data->itemAlias('status',($data->status?1:0));
+					return Html::a($data->itemAlias('status',($data->status?1:0)),["//versioning/version/apply","id"=>$data->id],["class"=>"btn btn-xs btn-".($data->status?'success':'danger')." btn-block","title"=>Yii::t("app","Click to apply this version!"),"data"=>["confirm"=>Yii::t("app","Are you sure to apply this version?"),"method"=>"post"]]);										
 				},
 				'filterType'=>GridView::FILTER_SELECT2,				
 				'filterWidgetOptions'=>[
@@ -152,10 +145,20 @@ $dataProvider->pagination = [
 					],
 					
 				],
-            ],
+            ],  
+            /*[
+				'attribute'=>'record_attributes',
+				'value'=> function($data) {
+					return str_replace("\\n","",$data->record_attributes);
+				}
+            ],*/
+            
             // 'isdel',
 
-            ['class' => 'kartik\grid\ActionColumn'],
+            [
+				'class' => 'kartik\grid\ActionColumn',
+				'template'=>'{delete}'
+            ],
         ],
     ]); ?>
 

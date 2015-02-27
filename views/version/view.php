@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'route_id',
             'record_id',
-            'attributes:ntext',
+            'record_attributes:ntext',
             'type',
             'status:boolean',
             'isdel',

@@ -127,7 +127,31 @@ class VersionSearch extends Version
 		}	
 		return $params;
 	}
-
+	
+	private function mkArrQuery($arraySqlOp)
+	{				
+		if (!isset($arraySqlOp[0]))
+		{
+			print_r($arraySqlOp);
+			die();
+			return false;
+		}
+		else
+		{
+			$array = [];
+			$a = $arraySqlOp[0];			
+			unset($arraySqlOp[0]);
+			array_push($array,$a[0]);
+			array_push($array,$a[1]);
+			$ch = self::mkArrQuery($arraySqlOp);
+			if ($ch)
+			{
+				array_push($array,$ch);
+			}	
+			return $array;			
+		}
+	}
+	
     /**
      * Creates data provider instance with search query applied
      *
@@ -150,16 +174,16 @@ class VersionSearch extends Version
         
         /* uncomment to sort by relations table on respective column */
 		$dataProvider->sort->attributes['recordModel'] = [			
-			'asc' => ['{{%versioning_record}}.model,{{%versioning_record}}.id' => SORT_ASC],
-			'desc' => ['{{%versioning_record}}.model,{{%versioning_record}}.id' => SORT_DESC],
+			'asc' => ['concat({{%versioning_record}}.model,{{%versioning_record}}.id)' => SORT_ASC],
+			'desc' => ['concat({{%versioning_record}}.model,{{%versioning_record}}.id)' => SORT_DESC],
 		];
 		$dataProvider->sort->attributes['time'] = [			
 			'asc' => ['{{%versioning_route}}.time' => SORT_ASC],
 			'desc' => ['{{%versioning_route}}.time' => SORT_DESC],
 		];
 		$dataProvider->sort->attributes['routeUser'] = [			
-			'asc' => [$userClass::tableName().'username' => SORT_ASC],
-			'desc' => [$userClass::tableName().'username' => SORT_DESC],
+			'asc' => [$userClass::tableName().'.username' => SORT_ASC],
+			'desc' => [$userClass::tableName().'.username' => SORT_DESC],
 		];
 
         if (!($this->load($params) && $this->validate())) {
@@ -188,10 +212,15 @@ class VersionSearch extends Version
 			$query->andFilterWhere($p);
 		}
 		
-		$query->andFilterWhere(["like","lower(concat({{%versioning_record}}.model,':',{{%versioning_record}}.record_id))",strtolower($this->recordModel)]);
+		$query->andFilterWhere(["like","lower(concat({{%versioning_record}}.model,' ',{{%versioning_record}}.record_id))",strtolower($this->recordModel)]);
 		$query->andFilterWhere(['like','lower('.$userClass::tableName().'.username)',strtolower($this->routeUser)]);
 				
-		/* example to use search all in field1,field2,field3 or field4
+		/* example to use search all in field1,field2,field3 or field4 */
+		
+		
+		//print_r(self::mkArrQuery([["OR","lower(field1) like '%".strtolower($this->recordModel)."%'"],["OR","lower(field2) like '%".strtolower($this->recordModel)."%'"]]));
+		//die();
+		/*
 		if ($this->term)
 		{
 			$query->andFilterWhere(["OR","lower(field1) like '%".strtolower($this->term)."%'",
@@ -201,8 +230,9 @@ class VersionSearch extends Version
 					]
 				]
 			]);	
-		}	
-		*/
+		}
+		*/ 	
+		
 
         return $dataProvider;
     }

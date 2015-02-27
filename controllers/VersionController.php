@@ -119,8 +119,19 @@ class VersionController extends Controller
     public function actionIndex($format= false,$arraymap= false,$term = false)
     {
         $searchModel = new VersionSearch();        
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams+($term?['VersionSearch'=>['term'=>$term]]:[]));
-
+        $req = Yii::$app->request->queryParams;                                        
+        if ($term) { $req[basename(str_replace("\\","/",get_class($searchModel)))]["term"] = $term;}        
+        $dataProvider = $searchModel->search($req);				                
+                
+        $dataProvider->pagination = [
+			"pageSize"=>10	
+		];
+		
+		if (!isset($req["sort"]))
+		{
+			$dataProvider->query->orderBy('time DESC');
+		}
+		        
         if ($format == 'json')
         {
 			$model = [];

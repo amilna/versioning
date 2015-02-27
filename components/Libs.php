@@ -136,15 +136,7 @@ class Libs extends Component
 					$rid = $model->getPrimaryKey();																																	
 					$record = Record::findOne(array_merge(["model"=>$modname],($rid == null?[]:["record_id"=>$rid])));
 					
-					if (!$record) {
-						if ($version->itemAlias("type",$eventName,true) != 1) {
-							$br = str_replace(basename($r),"",$r).$module->defaults["create"];
-							
-							$eventName = $version->itemAlias("type",1);
-							$arr = $model->attributes;	
-							$atr = json_encode($arr);
-						}
-												
+					if (!$record) {																		
 						$record = Record::findOne(["model"=>$modname,"record_id"=>$rid]);
 						if (!$record);
 						{
@@ -169,6 +161,33 @@ class Libs extends Component
 						$route->time = $time;
 						$res = (!$route->save()?false:$res);
 					}									
+										
+					$origin = Version::findOne(["record_id"=>$record->id,"status"=>true]);
+					
+					if ($version->itemAlias("type",$eventName,true) != 1) {
+						$br = str_replace(basename($r),"",$r).$module->defaults["create"];
+						
+						if ($rid != null && !$origin)
+						{								
+							$version0 = new Version();
+							$version0->record_attributes = json_encode($model->oldAttributes);	
+							$version0->isdel = 0;
+							$version0->record_id = $record->id;
+							$version0->route_id = $route->id;
+							$version0->type = 1;						
+							$version0->status = false;
+							$version0->makeRoot();
+							$res = (!$version0->save()?false:$res);
+							
+							$version->prependTo($version0);
+						}
+						elseif ($rid == null)
+						{
+							$eventName = $version->itemAlias("type",1);
+							$arr = $model->attributes;	
+							$atr = json_encode($arr);
+						}
+					}
 																								
 					$version->record_attributes = $atr;					
 										
@@ -222,11 +241,7 @@ class Libs extends Component
 						$rts = $version->route_ids == null?[]:json_decode($version->route_ids);
 						array_push($rts,$route->id);
 						$version->route_ids = json_encode(array_unique($rts));																					
-					}
-					else
-					{
-						$origin = Version::findOne(["record_id"=>$record->id,"status"=>true]);	
-					}															
+					}																		
 					
 					$version->isdel = 0;
 					$version->record_id = $record->id;
