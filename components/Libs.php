@@ -71,42 +71,71 @@ class Libs extends Component
 		return $arr;	
 	}
 	
-	public function arrItemIn($string,$array)
-	{		
+	public function arrItemIn($string,$array,$defReturn)
+	{					
+		$return = $string;	
 		foreach ($array as $a)
-		{
-			if (strpos($string,$a) === false)
-			{				
-				echo $string." gagal<br>";
-				return false;	
+		{			
+			if (strpos($string,$a) !== false)
+			{										
+				$return = $defReturn;
 			}			
-		}
-		echo $string."<br>";
-		return true;		
+		}				
+		return $return;		
 	}
     
     public function mkVersion($app,$eventName,$model,$routeString=false)
     {
-		$nomodels = ['amilna\versioning\models\Record','amilna\versioning\models\Version','amilna\versioning\models\Route'];		
-		$noroutes = ['versioning/version/apply'];		
 		$module = $app->getModule("versioning");
-		$modname = get_class($model);										
-						
-		/*
-		if (!self::arrItemIn($modname,$nomodels) && !self::arrItemIn($app->requestedRoute,$noroutes))								
+								
+		$nomodels = array_merge(['amilna\versioning\models\Record','amilna\versioning\models\Version','amilna\versioning\models\Route'],$module->nomodels);		
+		$noroutes = array_merge(['versioning/version/apply'],$module->noroutes);				
+		
+		$onmodels = $module->onmodels;
+		$onroutes = $module->onroutes;
+		
+		$modname = self::arrItemIn(get_class($model),$nomodels,$nomodels[0]);
+		$rotname = self::arrItemIn($app->requestedRoute,$noroutes,$noroutes[0]);		
+		
+		if (count($onmodels) > 0 || count($onroutes) > 0 )
 		{
-			die("masuk");	
+			$cekmod = true;
+			if (count($onmodels) > 0)
+			{
+				$onmodname = self::arrItemIn(get_class($model),$onmodels,$onmodels[0]);
+				$cekmod = in_array($onmodname,$onmodels);
+			}	
+			
+			$cekrot = true;
+			if (count($onroutes) > 0)
+			{
+				$onrotname = self::arrItemIn($app->requestedRoute,$onroutes,$onroutes[0]);
+				$cekrot = in_array($onrotname,$onroutes);
+			}	
+			
+			if (count($onmodels) > 0 && count($onroutes) > 0 )
+			{
+				$stat = (($cekmod || $cekrot) && (!in_array($modname,$nomodels) && !in_array($rotname,$noroutes)));
+			}
+			else
+			{
+				$stat = (($cekmod && $cekrot) && (!in_array($modname,$nomodels) && !in_array($rotname,$noroutes)));	
+			}
+			
+			if ($stat)
+			{
+				$modname = get_class($model);	
+				$rotname = $app->requestedRoute;
+			}
+
 		}
 		else
-		{
-			die("tidak");	
-		}
-		*/
-												
-		$res = true;
-		//if (!self::arrItemIn($modname,$nomodels) && !self::arrItemIn($app->requestedRoute,$noroutes))
-		if (!in_array($modname,$nomodels) && !in_array($app->requestedRoute,$noroutes))		
-		//if (self::arrItemIn($modname,$nomodels) == 2 && self::arrItemIn($app->requestedRoute,$noroutes) == 2)
+		{			
+			$stat = (!in_array($modname,$nomodels) && !in_array($rotname,$noroutes));
+		}	
+		
+		$res = true;		
+		if ($stat)
 		{									
 			$version = new Version();
 			if ($version->itemAlias("type",$eventName,true) == 1)
@@ -131,7 +160,7 @@ class Libs extends Component
 					
 					$user_id = ($app->user->isGuest?null:$app->user->id);					
 					$time = date("Y-m-d H:i:s",$_SERVER["REQUEST_TIME"]);
-					$r = (!$routeString?$app->requestedRoute:$routeString);
+					$r = (!$routeString?$rotname:$routeString);
 					
 					$rid = $model->getPrimaryKey();																																	
 					$record = Record::findOne(array_merge(["model"=>$modname],($rid == null?[]:["record_id"=>$rid])));
