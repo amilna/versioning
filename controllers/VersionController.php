@@ -89,6 +89,11 @@ class VersionController extends Controller
 						if (($record_id == null && $version->isNewRecord) || $record_id != null)
 						{
 							$res = (!$version->save()?false:$res);
+							if ($record_id != null)
+							{
+								$model->record->record_id = $version->id;								
+								$res = (!$model->record->save()?false:$res);
+							}
 						}					
 						
 						$res = (!$model->save()?false:$res);
@@ -210,7 +215,8 @@ class VersionController extends Controller
     public function actionCreate()
     {
         $model = new Version();
-
+		$model->isdel = 0;
+		
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {

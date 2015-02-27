@@ -134,7 +134,14 @@ $this->params['breadcrumbs'][] = $this->title;
 				'attribute'=>'status',
 				'format'=>'raw',				
 				'value'=>function($data){										
-					return Html::a($data->itemAlias('status',($data->status?1:0)),["//versioning/version/apply","id"=>$data->id],["class"=>"btn btn-xs btn-".($data->status?'success':'danger')." btn-block","title"=>Yii::t("app","Click to apply this version!"),"data"=>["confirm"=>Yii::t("app","Are you sure to apply this version?"),"method"=>"post"]]);										
+					if ($data->status)
+					{
+						return Html::tag("span",$data->itemAlias('status',($data->status?1:0)),["class"=>"btn btn-xs btn-".($data->status?'success':'danger')." btn-block"]);										
+					}
+					else
+					{
+						return Html::a($data->itemAlias('status',($data->status?1:0)),["//versioning/version/apply","id"=>$data->id],["class"=>"btn btn-xs btn-".($data->status?'success':'danger')." btn-block","title"=>Yii::t("app","Click to apply this version!"),"data"=>["confirm"=>Yii::t("app","Are you sure to apply this version?"),"method"=>"post"]]);										
+					}
 				},
 				'filterType'=>GridView::FILTER_SELECT2,				
 				'filterWidgetOptions'=>[
