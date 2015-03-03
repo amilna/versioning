@@ -63,6 +63,8 @@ Usage
 Once the extension is installed, check the url:
 [your application base url]/index.php/versioning
 
+Try it with edit some active record model an see the version that automatically created.
+
 To use notification widget (it will inform you what has changed), just put in your view
 
 ```

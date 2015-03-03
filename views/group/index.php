@@ -154,7 +154,10 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'time',
             // 'isdel',
 
-            ['class' => 'kartik\grid\ActionColumn'],
+            [
+				'class' => 'kartik\grid\ActionColumn',
+				'template'=>'{update} {delete}'
+            ],
         ],
     ]); ?>
 
