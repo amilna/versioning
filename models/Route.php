@@ -101,7 +101,7 @@ class Route extends \yii\db\ActiveRecord
      */
     public function getVersions()
     {
-        return $this->hasMany(Version::className(), ['route_id' => 'id']);
+        return $this->hasMany(Version::className(), ['route_id' => 'id'])->where("isdel=0");
     }
 
     /**

@@ -87,6 +87,10 @@ class Version extends \yii\db\ActiveRecord
     
 	public function itemAlias($list,$item = false,$bykey = false)
 	{
+		$model = ($this->record?basename(str_replace("\\","/",$this->record->model)):"");
+		$id = ($this->record?$this->record->record_id:"");
+		$username = ($this->route?$this->route->user->username:"");		
+		
 		$lists = [
 			/* example list of item alias for a field with name field */
 			'type'=>[							
@@ -98,7 +102,13 @@ class Version extends \yii\db\ActiveRecord
 			'status'=>[							
 						0=>Yii::t('app','Not Active'),
 						1=>Yii::t('app','Active'),						
-					],							
+					],	
+					
+			'notif' => [
+						0 => Yii::t("app","{model} record #{id} has deleted by {username}",["model"=>$model,"id"=>$id,"username"=>$username]),
+						1=> Yii::t("app","New {model} has created by {username}",["model"=>$model,"username"=>$username]),
+						2=> Yii::t("app","{model} record #{id} has changed by {username}",["model"=>$model,"id"=>$id,"username"=>$username]),
+					],
 						
 		];				
 		

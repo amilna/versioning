@@ -3,6 +3,7 @@
 namespace amilna\versioning\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%versioning_group}}".
@@ -28,6 +29,8 @@ class Group extends \yii\db\ActiveRecord
     {
         return '{{%versioning_group}}';
     }
+    
+    public $memberJson;
 
     /**
      * @inheritdoc
@@ -53,7 +56,7 @@ class Group extends \yii\db\ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'title' => Yii::t('app', 'Title'),
             'description' => Yii::t('app', 'Description'),
-            'owner_id' => Yii::t('app', 'Owner ID'),
+            'owner_id' => Yii::t('app', 'Owner'),
             'status' => Yii::t('app', 'Status'),
             'time' => Yii::t('app', 'Time'),
             'isdel' => Yii::t('app', 'Isdel'),
@@ -62,13 +65,16 @@ class Group extends \yii\db\ActiveRecord
     
 	public function itemAlias($list,$item = false,$bykey = false)
 	{
+		$userClass = Yii::$app->getModule('versioning')->userClass;
+		$owner = ArrayHelper::map($userClass::find()->all(), 'id', 'username');
+		
 		$lists = [
-			/* example list of item alias for a field with name field
-			'afield'=>[							
-							0=>Yii::t('app','an alias of 0'),							
-							1=>Yii::t('app','an alias of 1'),														
-						],			
-			*/			
+			/* example list of item alias for a field with name field */
+			'status'=>[							
+							0=>Yii::t('app','Disabled'),							
+							1=>Yii::t('app','Active'),														
+						],									
+			'owner'=>$owner,
 		];				
 		
 		if (isset($lists[$list]))
@@ -127,4 +133,19 @@ class Group extends \yii\db\ActiveRecord
     {
         return $this->hasMany(GrpUsr::className(), ['group_id' => 'id']);
     }
+    
+    public function getAvailableUsers()
+    {
+		$userClass = Yii::$app->getModule('versioning')->userClass;
+		return $userClass::find()->where(['not in','id',$this->member])->all();
+		//return ArrayHelper::map($userClass::find()->where(['not in','id',$this->member])->all(),"id","username");
+	}
+	
+	public function getMemberId()
+    {		
+		$members = $this->db->createCommand("SELECT array_agg(user_id) as id FROM ".GrpUsr::tableName()."
+				WHERE group_id = :id AND isdel = 0")->bindValues([":id"=>$this->id])->queryScalar();								
+		
+		return json_decode(str_replace(["{","}"],["[","]"],$members));
+	}
 }

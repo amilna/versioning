@@ -3,6 +3,7 @@ namespace amilna\versioning\components;
 
 use yii\base\Event;
 use yii\db\ActiveRecord;
+use yii\web\Controller;
 
 use yii\base\BootstrapInterface;
 
@@ -14,6 +15,14 @@ class Versioning implements BootstrapInterface
     public function bootstrap($app)
     {
 
+		$events = [Controller::EVENT_BEFORE_ACTION];
+		foreach ($events as $eventName) {
+			Event::on(Controller::className(), $eventName, function ($event) use ($app,$eventName) {				
+				Libs::mkView($app,$eventName,$event);
+			});																			
+		}
+				
+		
 		$events = [ActiveRecord::EVENT_AFTER_INSERT, ActiveRecord::EVENT_BEFORE_UPDATE, ActiveRecord::EVENT_AFTER_DELETE];
 				
 		$res0 = false;		

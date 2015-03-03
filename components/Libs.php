@@ -12,6 +12,8 @@ use SebastianBergmann\Diff\Differ;
 use amilna\versioning\models\Record;
 use amilna\versioning\models\Route;
 use amilna\versioning\models\Version;
+use amilna\versioning\models\VersionSearch;
+use amilna\versioning\models\GrpUsr;
 
 class Libs extends Component
 {
@@ -163,20 +165,16 @@ class Libs extends Component
 					$r = (!$routeString?$rotname:$routeString);
 					
 					$rid = $model->getPrimaryKey();																																	
-					$record = Record::findOne(array_merge(["model"=>$modname],($rid == null?[]:["record_id"=>$rid])));
+					$record = Record::findOne(["model"=>$modname,"record_id"=>$rid]);
 					
-					if (!$record) {																		
-						$record = Record::findOne(["model"=>$modname,"record_id"=>$rid]);
-						if (!$record);
+					if (!$record) {																								
+						$record = new Record();
+						$record->model = $modname;
+						if ($rid != null)
 						{
-							$record = new Record();
-							$record->model = $modname;
-							if ($rid != null)
-							{
-								$record->record_id = $rid;
-							}
-							$record->owner_id = $user_id;							
+							$record->record_id = $rid;
 						}
+						$record->owner_id = $user_id;												
 					}
 					$record->viewers = implode(",",[$user_id]);
 					
@@ -317,4 +315,85 @@ class Libs extends Component
 		}
 		return $res;
 	}
+	
+	public function mkView($app,$eventName,$event)
+	{
+		$module = $app->getModule("versioning");
+		$controller = $app->requestedAction->controller;
+		$rotname = (isset($controller->module->module)?$controller->module->id."/":"").$controller->id;
+		$user_id = $app->user->id;
+		//$action_param = $controller->actionParams;												
+		$action_param = $app->request->queryParams;
+		
+		if ($user_id > 0)
+		{																	
+			$params = [];
+			foreach ($action_param as $p)
+			{
+				if (is_numeric($p))
+				{
+					array_push($params,$p);	
+				}
+			}
+			
+			if (count($params) > 0)
+			{
+				$searchModel = new VersionSearch();
+				$dataProvider = $searchModel->search([]);
+				$query = $dataProvider->query;
+				$query->andWhere(["{{%versioning_version}}.status"=>true])
+					->andWhere("{{%versioning_route}}.route like :route",[":route"=>$rotname."%"])
+					->andWhere(["{{%versioning_record}}.record_id"=>$params]);							
+				
+				$groups = self::userGroups($user_id);
+												
+				foreach ($dataProvider->getModels() as $mod)
+				{															
+					foreach ($mod->route->versions as $m)
+					{					
+						if ($m->status && $m->record->record_id != null)
+						{
+							$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);
+							$group_id = $m->record->group_id;
+														
+														
+							$allow = false;
+							if (in_array($group_id,$groups) || $m->record->owner_id == $user_id)
+							{
+								$allow = true;	
+							}
+							
+							
+							if (!$allow && !$m->record->filter_viewers)
+							{
+								$allow = ($app->requestedRoute == $rotname."/".$module->defaults["view"]);
+							}
+							
+							if ($allow)
+							{
+								array_push($users,$user_id);
+								$m->record->viewers = implode(",",array_unique($users));
+								$m->record->save();																																
+							}
+							else
+							{
+								return $controller->redirect(["//".$rotname]);
+							}																			
+						}
+					}
+				}								
+			}
+			
+		}
+		
+	}
+	
+	public function userGroups($user_id)
+    {		
+		$members = Yii::$app->db->createCommand("SELECT array_agg(group_id) as id FROM ".GrpUsr::tableName()."
+				WHERE user_id = :id AND isdel = 0")->bindValues([":id"=>$user_id])->queryScalar();								
+		
+		return json_decode(str_replace(["{","}"],["[","]"],$members));
+	}
+		
 }	

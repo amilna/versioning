@@ -34,6 +34,7 @@ class m150225_073739_amilna_versioning extends Migration
             'owner_id' => Schema::TYPE_INTEGER.' NOT NULL',
             'group_id' => Schema::TYPE_INTEGER.'',
             'viewers' => Schema::TYPE_TEXT.'',
+            'filter_viewers' => Schema::TYPE_BOOLEAN.' NOT NULL DEFAULT FALSE',
             'isdel' => Schema::TYPE_SMALLINT.' NOT NULL DEFAULT 0',
         ]);        
         $this->addForeignKey( $this->db->tablePrefix.'versioning_record_owner_id', $this->db->tablePrefix.'versioning_record', 'owner_id', $this->db->tablePrefix.'user', 'id', 'CASCADE', null );
