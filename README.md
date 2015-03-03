@@ -1,6 +1,6 @@
 Data Versioning and Watching
 ============================
-Extensions for Yii2 for data versioning and watching
+Extensions for Yii2 for data versioning and CRUD watching. You can manage data version history that edited by user and manage user/group access at record level.
 
 Installation
 ------------
