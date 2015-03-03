@@ -13,7 +13,8 @@
     "require": {
         "yiisoft/yii2": "*",
         "sebastian/diff": "*",
-        "creocoder/yii2-nested-sets": "*"
+        "creocoder/yii2-nested-sets": "*",
+	"amilna/yii2-yap": "dev-master"
     },
     "autoload": {
         "psr-4": {
