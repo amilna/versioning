@@ -164,8 +164,7 @@ class Libs extends Component
 					$time = date("Y-m-d H:i:s",$_SERVER["REQUEST_TIME"]);
 					$r = (!$routeString?$rotname:$routeString);
 					
-					$rid = $model->getPrimaryKey();					
-					
+					$rid = $model->getPrimaryKey();										
 					$rid = (empty($rid)? null:$rid);
 																																	
 					$record = Record::findOne(["model"=>$modname,"record_id"=>$rid]);
