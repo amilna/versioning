@@ -139,58 +139,62 @@ class Record extends \yii\db\ActiveRecord
     {
 		$modelClass = $this->model;
 		$record_id = $this->record_id;
-		$version = VersionSearch::find()->where(['record_id'=>$this->id,'status'=>true])->one();
 		
+		$model = null;
 		
-		if ($record_id == null) {
-			$sql = "";
-			$key = [];
-			foreach (json_decode($version->record_attributes) as $a=>$v)
-			{
-				$sql .= ($sql == ""?"":" AND ").$a.($v === null?" is null":" = :".$a);
-				if ($v !== null)
+		if (class_exists ($modelClass)) {
+		
+			$version = VersionSearch::find()->where(['record_id'=>$this->id,'status'=>true])->one();
+			
+			if ($record_id == null) {
+				$sql = "";
+				$key = [];
+				foreach (json_decode($version->record_attributes) as $a=>$v)
 				{
-					$key[":".$a] = $v;	
+					$sql .= ($sql == ""?"":" AND ").$a.($v === null?" is null":" = :".$a);
+					if ($v !== null)
+					{
+						$key[":".$a] = $v;	
+					}
+				}			
+				$model = $modelClass::find()->where($sql,$key)->one();			
+			}
+			else
+			{
+				$model = $modelClass::findOne($record_id);		
+			}
+			
+			if (!$model) {
+				$model = new $modelClass();					
+			}
+			
+			$parents = $version->parents()->orderBy("depth")->all();		
+			
+			$attributes = [];
+			foreach ($parents as $p)
+			{
+				$attr = json_decode($p->record_attributes);
+				foreach ($attr as $a=>$v)
+				{
+					$attributes[$a] = $v;
 				}
-			}			
-			$model = $modelClass::find()->where($sql,$key)->one();			
-		}
-		else
-		{
-			$model = $modelClass::findOne($record_id);		
-		}
-		
-		if (!$model) {
-			$model = new $modelClass();					
-		}
-		
-		$parents = $version->parents()->orderBy("depth")->all();		
-		
-		$attributes = [];
-		foreach ($parents as $p)
-		{
-			$attr = json_decode($p->record_attributes);
+			}
+			
+			$attr = json_decode($version->record_attributes);
 			foreach ($attr as $a=>$v)
 			{
 				$attributes[$a] = $v;
+			}				
+			
+			if (count($attributes) > 0) {
+				$model->attributes = $attributes;
 			}
-		}
-		
-		$attr = json_decode($version->record_attributes);
-		foreach ($attr as $a=>$v)
-		{
-			$attributes[$a] = $v;
-		}				
-		
-		if (count($attributes) > 0) {
-			$model->attributes = $attributes;
-		}
-		
-		if ($model->isNewRecord && isset($model->id))
-		{
-			$model->id = null;
-		}
-				
+			
+			if ($model->isNewRecord && isset($model->id))
+			{
+				$model->id = null;
+			}
+		}		
 		return $model;	
 		
 	}		
