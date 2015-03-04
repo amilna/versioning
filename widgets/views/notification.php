@@ -29,18 +29,22 @@ $n = count($dataProvider->getModels());
 						{
 							$paths = explode("/",$mod->route->route);
 							$modname = $mod->record->model;
-							$model = $modname::findOne($mod->record->record_id);
-							$pk = $model->getPrimaryKey(true);								
-							foreach ($pk as $k=>$v) {}									
-							$route = "//".$paths[0]."/".$paths[1]."/".$module->defaults["view"];
-							
+							$url = "#";							
+							if (class_exists ($modname)) {
+								$model = $modname::findOne($mod->record->record_id);
+								$pk = $model->getPrimaryKey(true);								
+								foreach ($pk as $k=>$v) {}									
+								$route = "//".$paths[0]."/".$paths[1]."/".$module->defaults["view"];
+								$url = [$route,$k=>$v];
+							}	
 							$notif = [
 								0 => '<i class="fa fa-warning text-red"></i>',
 								1=> '<i class="fa fa-check-circle text-green"></i>',
 								2=> '<i class="fa fa-exclamation-circle text-yellow"></i>',
 							];
 							
-							echo "<li>".Html::a($notif[$mod->type]." ".$mod->itemAlias("notif",$mod->type),[$route,$k=>$v])."</li>";							
+							echo "<li>".Html::a($notif[$mod->type]." ".$mod->itemAlias("notif",$mod->type),$url)."</li>";							
+							
 						}
 					}												
 				?>						 						
