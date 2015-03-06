@@ -32,10 +32,12 @@ $n = count($dataProvider->getModels());
 							$url = "#";							
 							if (class_exists ($modname)) {
 								$model = $modname::findOne($mod->record->record_id);
-								$pk = $model->getPrimaryKey(true);								
-								foreach ($pk as $k=>$v) {}									
-								$route = "//".$paths[0]."/".$paths[1]."/".$module->defaults["view"];
-								$url = [$route,$k=>$v];
+								if ($model) {
+									$pk = $model->getPrimaryKey(true);								
+									foreach ($pk as $k=>$v) {}									
+									$route = "//".$paths[0]."/".$paths[1]."/".$module->defaults["view"];
+									$url = [$route,$k=>$v];
+								}
 							}	
 							$notif = [
 								0 => '<i class="fa fa-warning text-red"></i>',
