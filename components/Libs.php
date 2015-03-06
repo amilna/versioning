@@ -332,7 +332,7 @@ class Libs extends Component
 			$params = [];
 			foreach ($action_param as $p)
 			{
-				if (is_numeric($p))
+				if (is_int($p))
 				{
 					array_push($params,$p);	
 				}
