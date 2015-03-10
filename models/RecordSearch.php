@@ -37,7 +37,16 @@ class RecordSearch extends Record
 		return parent::find()->where([Record::tableName().'.isdel' => 0]);
 	}
 	
-
+	public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(),[
+            'ownerUsername' => Yii::t('app', 'Owner'),                        
+            'recordModel' => Yii::t('app', 'Model'),
+            'groupTitle' => Yii::t('app', 'Group'),
+        ]);
+    }
+	
+	
     /**
      * @inheritdoc
      */

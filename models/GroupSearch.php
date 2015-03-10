@@ -35,6 +35,12 @@ class GroupSearch extends Group
 		return parent::find()->where([Group::tableName().'.isdel' => 0]);
 	}
 	
+	public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(),[
+            'ownerUsername' => Yii::t('app', 'Owner'),                        
+        ]);
+    }
 
     /**
      * @inheritdoc

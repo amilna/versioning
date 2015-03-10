@@ -35,7 +35,16 @@ class VersionSearch extends Version
 	{
 		return parent::find()->where([Version::tableName().'.isdel' => 0]);
 	}	
-
+	
+	public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(),[
+            'time' => Yii::t('app', 'Time'),                        
+            'recordModel' => Yii::t('app', 'Model'),
+            'routeUser' => Yii::t('app', 'User'),
+        ]);
+    }
+	
     /**
      * @inheritdoc
      */
