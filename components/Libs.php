@@ -165,7 +165,7 @@ class Libs extends Component
 					$r = (!$routeString?$rotname:$routeString);
 					
 					$rid = $model->getPrimaryKey();										
-					$rid = (empty($rid)? null:$rid);
+					$rid = (empty($rid) || !is_int($rid)? null:$rid);
 																																	
 					$record = Record::findOne(["model"=>$modname,"record_id"=>$rid]);
 					
