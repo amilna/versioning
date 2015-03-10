@@ -97,11 +97,16 @@ $this->params['breadcrumbs'][] = $this->title;
 					$version = $data->getVersion();
 					
 					$rtml = $version?Html::encode(str_replace([",","/"],[", ","/ "],json_encode($version->attributes))):"";					
-					foreach (json_decode($data->record_attributes) as $a=>$v)
+					
+					$attr = json_decode($data->record_attributes);
+					if (is_array($attr) || is_object($attr))
 					{
-						$r = Html::encode(str_replace([",","/"],[", ","/ "],json_encode([$a=>$v])));						
-						$rtml = str_replace(substr($r,1,-1),str_replace(["{","}"],["<i class='text-danger'>","</i>"],$r),$rtml);						
-					}
+						foreach ($attr as $a=>$v)
+						{
+							$r = Html::encode(str_replace([",","/"],[", ","/ "],json_encode([$a=>$v])));						
+							$rtml = str_replace(substr($r,1,-1),str_replace(["{","}"],["<i class='text-danger'>","</i>"],$r),$rtml);						
+						}
+					}					
 																				
 					$html =  Html::tag("b",$data->record->model,["class"=>"text-primary"])."&nbsp;&nbsp;".Html::tag("span",$data->record->record_id,["class"=>"label label-primary"]);
 					$html .= "<p><small>".Yii::t("app","Route")."</small>: <i class='text-success'>".$data->route->route."</i><br>".
