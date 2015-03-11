@@ -94,10 +94,11 @@ class Version extends \yii\db\ActiveRecord
 		$lists = [
 			/* example list of item alias for a field with name field */
 			'type'=>[							
-						0=>\yii\db\ActiveRecord::EVENT_AFTER_DELETE,
+						0=>\yii\db\ActiveRecord::EVENT_BEFORE_DELETE,
 						1=>\yii\db\ActiveRecord::EVENT_AFTER_INSERT,
 						2=>\yii\db\ActiveRecord::EVENT_BEFORE_UPDATE,
 						3=>\yii\db\ActiveRecord::EVENT_AFTER_UPDATE,
+						4=>\yii\db\ActiveRecord::EVENT_AFTER_DELETE,
 					],	
 			'status'=>[							
 						0=>Yii::t('app','Not Active'),

@@ -23,7 +23,7 @@ class Versioning implements BootstrapInterface
 		}
 				
 		
-		$events = [ActiveRecord::EVENT_AFTER_INSERT, ActiveRecord::EVENT_BEFORE_UPDATE, ActiveRecord::EVENT_AFTER_DELETE];
+		$events = [ActiveRecord::EVENT_AFTER_INSERT, ActiveRecord::EVENT_BEFORE_UPDATE, ActiveRecord::EVENT_BEFORE_DELETE];
 				
 		$res0 = false;		
 		foreach ($events as $eventName) {
@@ -35,7 +35,7 @@ class Versioning implements BootstrapInterface
 		
 		if ($res0)
 		{		
-			$events = [ActiveRecord::EVENT_AFTER_UPDATE];
+			$events = [ActiveRecord::EVENT_AFTER_UPDATE,ActiveRecord::EVENT_AFTER_DELETE];
 			foreach ($events as $eventName) {
 				Event::on(ActiveRecord::className(), $eventName, function ($event) use ($app,$eventName,$res0) {				
 					$res = true;
@@ -43,7 +43,14 @@ class Versioning implements BootstrapInterface
 					foreach ($model->attributes as $a=>$v)
 					{
 						$m = $res0[1];
-						$res = ($m[$a] != $v?false:$res);						
+						if ($eventName == ActiveRecord::EVENT_AFTER_UPDATE)
+						{
+							$res = ($m[$a] != $v?false:$res);
+						}
+						elseif ($eventName == ActiveRecord::EVENT_AFTER_DELETE)
+						{
+							$res = ($m[$a] != null?false:$res);	
+						}
 					}
 
 					if (!$res)
