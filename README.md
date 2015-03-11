@@ -10,7 +10,7 @@ The preferred way to install this extension is through [composer](http://getcomp
 
 Since this package do not have stable release on packagist, you should use these settings in your composer.json file :
 
-```
+```json
 "minimum-stability": "dev",
 "prefer-stable": true,
 ```
