@@ -225,5 +225,20 @@ class Version extends \yii\db\ActiveRecord
 		return $model;	
 		
 	}	
+	
+	public function afterSave($insert, $changedAttributes)
+    {								 					
+		if ($this->isdel == 1)
+		{
+			$this->afterDelete();						
+			
+			$res = $this->db->createCommand("UPDATE 
+				".$this->tableName()."
+				SET (lft,rgt,depth,tree) = (-1,0,0,null)
+				WHERE id = ".$this->id."")->execute();									
+		}
+				
+		parent::afterSave($insert, $changedAttributes);
+	}
      
 }

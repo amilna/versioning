@@ -87,7 +87,43 @@ class VersionController extends Controller
 						$model->status = true;
 						
 						if (($record_id == null && $version->isNewRecord) || $record_id != null)
-						{
+						{							
+							foreach ($version->behaviors as $k=>$b)
+							{
+								if ($k == "tree")
+								{									
+									$lid =  $b->leftAttribute;
+									$rid =  $b->rightAttribute;
+									$did =  $b->depthAttribute;
+									
+									$parent = $version->find()->andWhere($lid." < ".$version->$lid." AND ".$rid." > ".$version->$rid." AND (".$did."+1) = ".$version->$did)->one();												
+									
+									if ($parent)	
+									{
+										$version->prependTo($parent);
+									}
+									else
+									{
+										if (!empty($b->treeAttribute))
+										{
+											$version->makeRoot();
+										}
+										else
+										{
+											$parent = $version->find()->andWhere($did." = 1 ")->one();
+											if ($parent)
+											{
+												$version->prependTo($parent);
+											}
+											else
+											{
+												$version->makeRoot();
+											}
+										}
+									}							
+								}								
+							}								
+							
 							$res = (!$version->save()?false:$res);
 							if ($record_id != null)
 							{
@@ -295,8 +331,7 @@ class VersionController extends Controller
 			$version = $parent->version;
 			$parent->save();
 			$version->save();
-		}
-        $model->makeRoot();
+		}        
         $model->save();
         //$model->delete(); //this will true delete
         
