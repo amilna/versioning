@@ -142,31 +142,7 @@ class VersionSearch extends Version
 			}
 		}	
 		return $params;
-	}
-	
-	private function mkArrQuery($arraySqlOp)
-	{				
-		if (!isset($arraySqlOp[0]))
-		{
-			print_r($arraySqlOp);
-			die();
-			return false;
-		}
-		else
-		{
-			$array = [];
-			$a = $arraySqlOp[0];			
-			unset($arraySqlOp[0]);
-			array_push($array,$a[0]);
-			array_push($array,$a[1]);
-			$ch = self::mkArrQuery($arraySqlOp);
-			if ($ch)
-			{
-				array_push($array,$ch);
-			}	
-			return $array;			
-		}
-	}
+	}		
 	
     /**
      * Creates data provider instance with search query applied
