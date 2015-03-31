@@ -349,63 +349,69 @@ class Libs extends Component
 					->andWhere(["{{%versioning_record}}.record_id"=>$params]);																	
 				
 				$groups = self::userGroups($user_id);								
-												
-				foreach ($dataProvider->getModels() as $mod)
-				{															
-					$m = $mod;
-					$v = $mod->version;					
-					if ($v)
-					{											
-						$allow = false;
-						if (isset(Yii::$app->user->identity->isAdmin))
-						{
-							$allow = Yii::$app->user->identity->isAdmin;
-						}
-						else
-						{
-							$allow = in_array(Yii::$app->user->identity->username,$module->admins);
-						}																		
-						
-						$inarr = false;
-						foreach ($v->getPrimaryKey(true) as $k=>$p)
-						{
-							if (isset($action_param[$k]))
+				
+				try {												
+								
+					foreach ($dataProvider->getModels() as $mod)
+					{															
+						$m = $mod;
+						$v = $mod->version;					
+						if ($v)
+						{											
+							$allow = false;
+							if (isset(Yii::$app->user->identity->isAdmin))
 							{
-								if ($action_param[$k] == $p)
-								{
-									$inarr = true;	
-								}
-							}							
-						}
-						
-						if ($inarr)						
-						{
-							$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);
-							$group_id = $m->record->group_id;														
-																					
-							if (in_array($group_id,$groups) || $m->record->owner_id == $user_id)
-							{
-								$allow = true;	
-							}							
-							
-							if (!$allow && !$m->record->filter_viewers)
-							{
-								$allow = ($app->requestedRoute == $rotname."/".$module->defaults["view"]);
-							}
-							
-							if ($allow)
-							{
-								array_push($users,$user_id);
-								$m->record->viewers = implode(",",array_unique($users));
-								$m->record->save();						
+								$allow = Yii::$app->user->identity->isAdmin;
 							}
 							else
 							{
-								return $controller->redirect(["//".$rotname]);
-							}																			
+								$allow = in_array(Yii::$app->user->identity->username,$module->admins);
+							}																		
+							
+							$inarr = false;
+							foreach ($v->getPrimaryKey(true) as $k=>$p)
+							{
+								if (isset($action_param[$k]))
+								{
+									if ($action_param[$k] == $p)
+									{
+										$inarr = true;	
+									}
+								}							
+							}
+							
+							if ($inarr)						
+							{
+								$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);
+								$group_id = $m->record->group_id;														
+																						
+								if (in_array($group_id,$groups) || $m->record->owner_id == $user_id)
+								{
+									$allow = true;	
+								}							
+								
+								if (!$allow && !$m->record->filter_viewers)
+								{
+									$allow = ($app->requestedRoute == $rotname."/".$module->defaults["view"]);
+								}
+								
+								if ($allow)
+								{
+									array_push($users,$user_id);
+									$m->record->viewers = implode(",",array_unique($users));
+									$m->record->save();						
+								}
+								else
+								{
+									return $controller->redirect(["//".$rotname]);
+								}																			
+							}
 						}
 					}
 				}								
+				catch (yii\db\Exception $e) {
+					
+				}	
 			}
 			
 		}
