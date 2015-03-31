@@ -423,7 +423,8 @@ class Libs extends Component
 		$members = Yii::$app->db->createCommand("SELECT array_agg(group_id) as id FROM ".GrpUsr::tableName()."
 				WHERE user_id = :id AND isdel = 0")->bindValues([":id"=>$user_id])->queryScalar();								
 		
-		return json_decode(str_replace(["{","}"],["[","]"],$members));
+		$groups = json_decode(str_replace(["{","}"],["[","]"],$members));		
+		return ($groups == null?[]:$group)s;
 	}		
 		
 }	
