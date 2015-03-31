@@ -152,30 +152,20 @@ class VersionController extends Controller
 		return $this->redirect(['index']);
 	}
 
-	public function actionReadall()
+	public function actionReadall($models = false)
     {                
         $user_id = Yii::$app->user->id;
         
-        $searchModel = new VersionSearch();
-		$dataProvider = $searchModel->search([]);
-		$query = $dataProvider->query;
-		$query->andWhere(["{{%versioning_version}}.status"=>true])
-			->andWhere("{{%versioning_record}}.record_id is not null")
-			->andWhere("concat(',',{{%versioning_record}}.viewers,',') not like :uid",[":uid"=>"%,".$user_id.",%"]);
+        if ($user_id > 0)
+        {
         
-        foreach ($dataProvider->getModels() as $mod)
-		{															
-			foreach ($mod->route->versions as $m)
-			{					
-				if ($m->status)
-				{
-					$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);				
-					array_push($users,$user_id);					
-					$m->record->viewers = implode(",",array_unique($users));
-					$m->record->save();											
-				}
-			}
-		}
+			$res = Yii::$app->db->createCommand("UPDATE 
+					{{%versioning_record}}
+					SET viewers = concat(viewers,',',".$user_id.")
+					WHERE concat(',',{{%versioning_record}}.viewers,',') not like '%,".$user_id.",%'".($models?" AND model = ANY (array['".str_replace(",","','",$models)."'])":""))
+					->execute();											
+        
+		}        
 				
 		return $this->redirect($_SERVER["HTTP_REFERER"]);
     }

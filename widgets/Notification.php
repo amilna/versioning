@@ -47,7 +47,7 @@ class Notification extends Widget
 		else
 		{
 			$query->limit(10);		
-		}									
+		}											
 		
 		$query->orderBy('{{%versioning_route}}.time DESC,{{%versioning_version}}.id DESC');
 						
@@ -56,7 +56,7 @@ class Notification extends Widget
 	
 		$view->registerJs($script);		
 		
-		echo $this->render($this->viewPath,['searchModel'=>$searchModel,'dataProvider'=>$dataProvider,'module'=>$module]);
+		echo $this->render($this->viewPath,['searchModel'=>$searchModel,'dataProvider'=>$dataProvider,'module'=>$module,'widget'=>$this]);
         
     }
         

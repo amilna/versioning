@@ -325,14 +325,14 @@ class Libs extends Component
 		$rotname = (isset($controller->module->module)?$controller->module->id."/":"").$controller->id;
 		$user_id = $app->user->id;
 		//$action_param = $controller->actionParams;												
-		$action_param = $app->request->queryParams;
+		$action_param = $app->request->queryParams;		
 		
 		if ($user_id > 0)
 		{																	
 			$params = [];
 			foreach ($action_param as $p)
-			{
-				if (is_int($p))
+			{								
+				if (!is_float($p) && is_numeric($p))
 				{
 					array_push($params,$p);	
 				}
@@ -340,31 +340,53 @@ class Libs extends Component
 			
 			if (count($params) > 0)
 			{
+								
 				$searchModel = new VersionSearch();
 				$dataProvider = $searchModel->search([]);
 				$query = $dataProvider->query;
 				$query->andWhere(["{{%versioning_version}}.status"=>true])
 					->andWhere("{{%versioning_route}}.route like :route",[":route"=>$rotname."%"])
-					->andWhere(["{{%versioning_record}}.record_id"=>$params]);							
+					->andWhere(["{{%versioning_record}}.record_id"=>$params]);																	
 				
-				$groups = self::userGroups($user_id);
+				$groups = self::userGroups($user_id);								
 												
 				foreach ($dataProvider->getModels() as $mod)
 				{															
-					foreach ($mod->route->versions as $m)
-					{					
-						if ($m->status && $m->record->record_id != null)
+					$m = $mod;
+					$v = $mod->version;					
+					if ($v)
+					{											
+						$allow = false;
+						if (isset(Yii::$app->user->identity->isAdmin))
+						{
+							$allow = Yii::$app->user->identity->isAdmin;
+						}
+						else
+						{
+							$allow = in_array(Yii::$app->user->identity->username,$module->admins);
+						}																		
+						
+						$inarr = false;
+						foreach ($v->getPrimaryKey(true) as $k=>$p)
+						{
+							if (isset($action_param[$k]))
+							{
+								if ($action_param[$k] == $p)
+								{
+									$inarr = true;	
+								}
+							}							
+						}
+						
+						if ($inarr)						
 						{
 							$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);
-							$group_id = $m->record->group_id;
-														
-														
-							$allow = false;
+							$group_id = $m->record->group_id;														
+																					
 							if (in_array($group_id,$groups) || $m->record->owner_id == $user_id)
 							{
 								$allow = true;	
-							}
-							
+							}							
 							
 							if (!$allow && !$m->record->filter_viewers)
 							{
@@ -375,7 +397,7 @@ class Libs extends Component
 							{
 								array_push($users,$user_id);
 								$m->record->viewers = implode(",",array_unique($users));
-								$m->record->save();																																
+								$m->record->save();						
 							}
 							else
 							{
@@ -396,6 +418,6 @@ class Libs extends Component
 				WHERE user_id = :id AND isdel = 0")->bindValues([":id"=>$user_id])->queryScalar();								
 		
 		return json_decode(str_replace(["{","}"],["[","]"],$members));
-	}
+	}		
 		
 }	

@@ -45,13 +45,13 @@ $n = count($dataProvider->getModels());
 								2=> '<i class="fa fa-exclamation-circle text-yellow"></i>',
 							];
 							
-							echo "<li>".Html::a($notif[$mod->type]." ".$mod->itemAlias("notif",$mod->type),$url)."</li>";							
+							echo "<li>".Html::a($notif[$mod->type]." ".$mod->itemAlias("notif",$mod->type),$url,["title"=>$mod->itemAlias("notif",$mod->type)])."</li>";							
 							
 						}
 					}												
 				?>						 						
 			</ul>				
 		</li>
-		<li class="footer"><?= Html::a(Yii::t("app","Mark all as read"),["//versioning/version/readall"])?></li>		
+		<li class="footer"><?= Html::a(Yii::t("app","Mark all as read"),["//versioning/version/readall","models"=>(count($widget->models) > 0?implode(",",$widget->models):false)])?></li>		
 	</ul>		
 </li>	
