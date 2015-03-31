@@ -424,7 +424,7 @@ class Libs extends Component
 				WHERE user_id = :id AND isdel = 0")->bindValues([":id"=>$user_id])->queryScalar();								
 		
 		$groups = json_decode(str_replace(["{","}"],["[","]"],$members));		
-		return ($groups == null?[]:$group)s;
+		return ($groups == null?[]:$groups);
 	}		
 		
 }	
