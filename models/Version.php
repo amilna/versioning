@@ -89,7 +89,7 @@ class Version extends \yii\db\ActiveRecord
 	{
 		$model = Yii::t("app",($this->record?basename(str_replace("\\","/",$this->record->model)):""));
 		$id = ($this->record?$this->record->record_id:"");
-		$username = ($this->route?$this->route->user->username:Yii::t("app","someone"));		
+		$username = ($this->route?($this->route->user?$this->route->user->username:Yii::t("app","someone")):Yii::t("app","someone"));		
 		
 		$lists = [
 			/* example list of item alias for a field with name field */
