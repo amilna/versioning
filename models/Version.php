@@ -87,7 +87,7 @@ class Version extends \yii\db\ActiveRecord
     
 	public function itemAlias($list,$item = false,$bykey = false)
 	{
-		$model = ($this->record?basename(str_replace("\\","/",$this->record->model)):"");
+		$model = Yii::t("app",($this->record?basename(str_replace("\\","/",$this->record->model)):""));
 		$id = ($this->record?$this->record->record_id:"");
 		$username = ($this->route?$this->route->user->username:Yii::t("app","someone"));		
 		
