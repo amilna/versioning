@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $model amilna\versioning\models\Group */
 
 $this->title = Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Group',
+    'modelClass' => Yii::t('app','Group'),
 ]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Groups'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;

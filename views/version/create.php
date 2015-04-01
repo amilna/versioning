@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $model amilna\versioning\models\Version */
 
 $this->title = Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Version',
+    'modelClass' => Yii::t('app','Version'),
 ]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Versions'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
