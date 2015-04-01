@@ -22,7 +22,17 @@ $n = count($dataProvider->getModels());
 		<li>
 			<!-- inner menu: contains the actual data -->			
 			<ul class="menu">				
-				<?php																									
+				<?php		
+					$mods = (count($widget->models) > 0?implode(",",$widget->models):false);
+					
+					$views = [];
+					foreach ($widget->models as $m)
+					{
+						if (isset($module->views[$m])) {
+							$views[$m] = $module->views[$m];	
+						}						
+					}																												
+																												
 					foreach ($dataProvider->getModels() as $mod)
 					{																																	
 						if ($mod->record->record_id != null)
@@ -35,7 +45,7 @@ $n = count($dataProvider->getModels());
 								if ($model) {
 									$pk = $model->getPrimaryKey(true);								
 									foreach ($pk as $k=>$v) {}									
-									$route = "//".$paths[0]."/".$paths[1]."/".$module->defaults["view"];
+									$route = "//".$paths[0]."/".$paths[1]."/".(isset($views[$modname])?$views[$modname]:$module->defaults["view"]);
 									$url = [$route,$k=>$v];
 								}
 							}	
@@ -52,6 +62,6 @@ $n = count($dataProvider->getModels());
 				?>						 						
 			</ul>				
 		</li>
-		<li class="footer"><?= Html::a(Yii::t("app","Mark all as read"),["//versioning/version/readall","models"=>(count($widget->models) > 0?implode(",",$widget->models):false)])?></li>		
+		<li class="footer"><?= Html::a(Yii::t("app","Mark all as read"),["//versioning/version/readall","models"=>$mods])?></li>		
 	</ul>		
 </li>	

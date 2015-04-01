@@ -32,9 +32,9 @@ class Notification extends Widget
 		$query = $dataProvider->query;
 		$query->andWhere(["{{%versioning_version}}.status"=>true])
 			->andWhere("{{%versioning_record}}.record_id is not null");
-		
+				
 		if (count($this->models) > 0)
-		{
+		{										
 			$query->andWhere(["{{%versioning_record}}.model"=>$this->models])
 				->andWhere("{{%versioning_record}}.filter_viewers = false");
 		}				
