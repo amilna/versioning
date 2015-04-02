@@ -352,7 +352,7 @@ class Libs extends Component
 				
 				try {												
 					
-					$allowall = false;
+					$allowall = count($dataProvider->getModels()) > 0?false:true;
 								
 					foreach ($dataProvider->getModels() as $mod)
 					{															
@@ -407,19 +407,19 @@ class Libs extends Component
 										}
 									}
 									$allow = in_array($app->requestedRoute,$mviews);
-								}
+								}																
 								
 								if ($allow)
 								{
 									array_push($users,$user_id);
 									$m->record->viewers = implode(",",array_unique($users));
 									$m->record->save();						
-								}
+								}																
 								
 								$allowall = !$allowall?$allow:true;
 							}
 						}
-					}
+					}										
 					
 					if (!$allowall)
 					{						
