@@ -29,8 +29,9 @@ $n = count($dataProvider->getModels());
 					foreach ($widget->models as $m)
 					{
 						if (isset($module->views[$m])) {
-							$views[$m] = $module->views[$m];	
-						}						
+							$views[$m] = $module->views[$m][0];	
+						}
+						
 					}																												
 																												
 					foreach ($dataProvider->getModels() as $mod)
@@ -45,7 +46,7 @@ $n = count($dataProvider->getModels());
 								if ($model) {
 									$pk = $model->getPrimaryKey(true);								
 									foreach ($pk as $k=>$v) {}									
-									$route = "//".$paths[0]."/".$paths[1]."/".(isset($views[$modname])?$views[$modname]:$module->defaults["view"]);
+									$route = "//".$paths[0]."/".$paths[1]."/".(isset($views[$modname])?$views[$modname]:$module->defaults["view"]);									
 									$url = [$route,$k=>$v];
 								}
 							}	

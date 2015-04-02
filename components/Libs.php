@@ -394,8 +394,19 @@ class Libs extends Component
 								
 								if (!$allow && !$m->record->filter_viewers)
 								{
-									$views = $module->views;									
-									$allow = ($app->requestedRoute == $rotname."/".(isset($views[$m->record->model])?$views[$m->record->model]:$module->defaults["view"]));
+									$views = $module->views;
+									$mviews = [$rotname."/".$module->defaults["view"]];
+									foreach ($views as $mw=>$vws)
+									{
+										if ($mw == $m->record->model)
+										{
+											foreach ($vws as $vw)
+											{
+												$mviews[] = $rotname."/".$vw;	
+											}
+										}
+									}
+									$allow = in_array($app->requestedRoute,$mviews);
 								}
 								
 								if ($allow)
