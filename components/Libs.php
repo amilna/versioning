@@ -351,6 +351,8 @@ class Libs extends Component
 				$groups = self::userGroups($user_id);								
 				
 				try {												
+					
+					$allowall = false;
 								
 					foreach ($dataProvider->getModels() as $mod)
 					{															
@@ -402,13 +404,16 @@ class Libs extends Component
 									$m->record->viewers = implode(",",array_unique($users));
 									$m->record->save();						
 								}
-								else
-								{
-									return $controller->redirect(["//".$rotname]);
-								}																			
+								
+								$allowall = !$allowall?$allow:true;
 							}
 						}
 					}
+					
+					if (!$allowall)
+					{						
+						return $controller->redirect(["//".$rotname]);
+					}	
 				}								
 				catch (yii\db\Exception $e) {
 					
