@@ -180,7 +180,7 @@ class GroupSearch extends Group
             return $dataProvider;
         }				
 		
-        $params = self::queryNumber([['id'],['owner_id'],['status'],['isdel']/*['id','{{%records}}'],['id','{{%owner}}'],['id','{{%member}}']*/]);
+        $params = self::queryNumber([['id',$this->tableName()],['owner_id'],['status'],['isdel']/*['id','{{%records}}'],['id','{{%owner}}'],['id','{{%member}}']*/]);
 		foreach ($params as $p)
 		{
 			$query->andFilterWhere($p);

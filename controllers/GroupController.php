@@ -43,7 +43,22 @@ class GroupController extends Controller
         if ($term) { $req[basename(str_replace("\\","/",get_class($searchModel)))]["term"] = $term;}        
         $dataProvider = $searchModel->search($req);	
 		$query = $dataProvider->query;
-		$query->andWhere(['{{%versioning_group}}.owner_id'=>Yii::$app->user->id]);
+		
+		$module = Yii::$app->getModule("versioning");
+        $allow = false;
+        if (isset(Yii::$app->user->identity->isAdmin))
+		{
+			$allow = Yii::$app->user->identity->isAdmin;
+		}
+		else
+		{
+			$allow = in_array(Yii::$app->user->identity->username,$module->admins);
+		}																		
+        
+        if (!$allow)
+        {
+			$query->andWhere(['{{%versioning_group}}.owner_id'=>Yii::$app->user->id]);
+		}		
 		
 		if (Yii::$app->request->post('hasEditable')) {			
 			$Id = Yii::$app->request->post('editableKey');

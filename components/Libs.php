@@ -353,11 +353,12 @@ class Libs extends Component
 				try {												
 					
 					$allowall = count($dataProvider->getModels()) > 0?false:true;
-								
+									
 					foreach ($dataProvider->getModels() as $mod)
 					{															
 						$m = $mod;
 						$v = $mod->version;					
+						
 						if ($v)
 						{											
 							$allow = false;
@@ -368,7 +369,7 @@ class Libs extends Component
 							else
 							{
 								$allow = in_array(Yii::$app->user->identity->username,$module->admins);
-							}																		
+							}															
 							
 							$inarr = false;
 							foreach ($v->getPrimaryKey(true) as $k=>$p)
@@ -381,9 +382,9 @@ class Libs extends Component
 									}
 								}							
 							}
-							
-							if ($inarr)						
-							{
+														
+							if ($inarr && !$allow)						
+							{								
 								$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);
 								$group_id = $m->record->group_id;														
 																						
@@ -414,12 +415,13 @@ class Libs extends Component
 									array_push($users,$user_id);
 									$m->record->viewers = implode(",",array_unique($users));
 									$m->record->save();						
-								}																
-								
-								$allowall = !$allowall?$allow:true;
+								}																																	
+																
 							}
+							$allowall = !$allowall?$allow:true;							
 						}
 					}										
+										
 					
 					if (!$allowall)
 					{						

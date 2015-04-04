@@ -49,7 +49,7 @@ class RecordController extends Controller
 		else
 		{
 			$allow = in_array(Yii::$app->user->identity->username,$module->admins);
-		}																		
+		}																		                
         
         if (!$allow)
         {

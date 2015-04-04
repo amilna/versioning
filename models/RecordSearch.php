@@ -193,7 +193,7 @@ class RecordSearch extends Record
             ['id','{{%versions}}']*/
         ]);
 
-        $params = self::queryNumber([['id'],['record_id'],['owner_id'],['group_id'],['isdel']/*['id','{{%owner}}'],['id','{{%group}}'],['id','{{%versions}}']*/]);
+        $params = self::queryNumber([['id',$this->tableName()],['record_id'],['owner_id',$this->tableName()],['group_id'],['isdel']/*['id','{{%owner}}'],['id','{{%group}}'],['id','{{%versions}}']*/]);
 		foreach ($params as $p)
 		{
 			$query->andFilterWhere($p);

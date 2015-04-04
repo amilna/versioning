@@ -188,7 +188,7 @@ class VersionSearch extends Version
             ['id','{{%route}}']*/
         ]);
 
-        $params = self::queryNumber([['id'],['route_id'],['record_id'],['type'],['isdel']/*['id','{{%record}}'],['id','{{%route}}']*/]);
+        $params = self::queryNumber([['id',$this->tableName()],['route_id'],['record_id'],['type'],['isdel']/*['id','{{%record}}'],['id','{{%route}}']*/]);
 		foreach ($params as $p)
 		{
 			$query->andFilterWhere($p);
