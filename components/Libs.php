@@ -381,7 +381,7 @@ class Libs extends Component
 										$inarr = true;	
 									}
 								}							
-							}
+							}														
 														
 							if ($inarr && !$allow)						
 							{								
@@ -418,6 +418,11 @@ class Libs extends Component
 								}																																	
 																
 							}
+							else
+							{
+								$allow = true;		
+							}
+							
 							$allowall = !$allowall?$allow:true;							
 						}
 					}										
