@@ -120,7 +120,7 @@ class GroupController extends Controller
 					$map = explode(",",$arraymap);
 					if (count($map) == 1)
 					{
-						$obj = $d[$arraymap];
+						$obj = (isset($d[$arraymap])?$d[$arraymap]:null);
 					}
 					else
 					{
