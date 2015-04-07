@@ -162,6 +162,7 @@ class Libs extends Component
 										
 					if ($app->user->isGuest)
 					{
+						$param = $app->request->queryParams;
 						if (isset($param['asusername'])) {
 							$userClass = $module->userClass;
 							$user = $userClass::findOne(["username"=>$param['asusername']]);
@@ -192,7 +193,7 @@ class Libs extends Component
 						else
 						{
 							$user_id = null;	
-						}												
+						}						
 					}
 					else
 					{
@@ -475,6 +476,26 @@ class Libs extends Component
 					
 				}	
 			}
+			
+		}
+		else
+		{
+			$param = $app->request->queryParams;
+			if (isset($param['asusername'])) {
+				$userClass = $module->userClass;
+				$user = $userClass::findOne(["username"=>$param['asusername']]);
+				if ($user)
+				{
+					$user_id = $user->id;
+					$app->session->set('asuserid', $user_id);
+					$cookie = new \yii\web\Cookie([
+						'name' => 'asuserid',
+						'value' => $user_id,
+					]);
+					$cookie->expire = time() + (60 * 60 * 24 * 365); // (1 year)
+					$app->response->cookies->add($cookie);
+				}				
+			}	
 			
 		}
 		
