@@ -193,11 +193,13 @@ class Libs extends Component
 						{
 							$user_id = null;	
 						}
+						
+						die($param['asusername'].$user_id);
 					}
 					else
 					{
 						$user_id = $app->user->id;						
-					}
+					}										
 					
 					$time = date("Y-m-d H:i:s",$_SERVER["REQUEST_TIME"]);
 					$r = (!$routeString?$rotname:$routeString);
