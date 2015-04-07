@@ -192,9 +192,7 @@ class Libs extends Component
 						else
 						{
 							$user_id = null;	
-						}
-						
-						die($param['asusername'].$user_id);
+						}												
 					}
 					else
 					{
