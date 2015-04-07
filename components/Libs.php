@@ -159,8 +159,46 @@ class Libs extends Component
 				
 				$transaction = $app->db->beginTransaction();
 				try {
+										
+					if ($app->user->isGuest)
+					{
+						if (isset($param['asusername'])) {
+							$userClass = $module->userClass;
+							$user = $userClass::findOne(["username"=>$param['asusername']]);
+							if ($user)
+							{
+								$user_id = $user->id;
+								$app->session->set('asuserid', $user_id);
+								$cookie = new \yii\web\Cookie([
+									'name' => 'asuserid',
+									'value' => $user_id,
+								]);
+								$cookie->expire = time() + (60 * 60 * 24 * 365); // (1 year)
+								$app->response->cookies->add($cookie);
+							}
+							else
+							{
+								$user_id = null;	
+							}
+						} 
+						else if ($app->session->has('asuserid'))
+						{
+							$user_id = $app->session->get('asuserid');
+						}	
+						else if (isset($app->request->cookies['asuserid']))
+						{
+							$user_id = $app->request->cookies['asuserid']->value;
+						}
+						else
+						{
+							$user_id = null;	
+						}
+					}
+					else
+					{
+						$user_id = $app->user->id;						
+					}
 					
-					$user_id = ($app->user->isGuest?null:$app->user->id);					
 					$time = date("Y-m-d H:i:s",$_SERVER["REQUEST_TIME"]);
 					$r = (!$routeString?$rotname:$routeString);
 					
