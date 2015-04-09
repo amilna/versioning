@@ -460,10 +460,15 @@ class Libs extends Component
 							else
 							{
 								$allow = true;		
-							}
-							
-							$allowall = !$allowall?$allow:true;							
+							}														
+														
 						}
+						else
+						{							
+							$allow = true;		
+						}
+												
+						$allowall = !$allowall?$allow:true;							
 					}										
 										
 					
