@@ -197,9 +197,12 @@ class Version extends \yii\db\ActiveRecord
 			foreach ($parents as $p)
 			{
 				$attr = json_decode($p->record_attributes);
-				foreach ($attr as $a=>$v)
+				if (is_array($attr) || is_object($attr))
 				{
-					$attributes[$a] = $v;
+					foreach ($attr as $a=>$v)
+					{
+						$attributes[$a] = $v;
+					}
 				}
 			}
 			

@@ -86,7 +86,7 @@ class Libs extends Component
 		return $return;		
 	}
     
-    public function mkVersion($app,$eventName,$model,$routeString=false)
+    public static function mkVersion($app,$eventName,$model,$routeString=false)
     {
 		$module = $app->getModule("versioning");
 								
@@ -357,7 +357,7 @@ class Libs extends Component
 		return $res;
 	}
 	
-	public function mkView($app,$eventName,$event)
+	public static function mkView($app,$eventName,$event)
 	{
 		$module = $app->getModule("versioning");
 		$controller = $app->requestedAction->controller;
