@@ -420,12 +420,13 @@ class Libs extends Component
 										$inarr = true;	
 									}
 								}							
-							}														
+							}																												
+							
+							$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);
+							$group_id = $m->record->group_id;														
 														
 							if ($inarr && !$allow)						
-							{								
-								$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);
-								$group_id = $m->record->group_id;														
+							{																
 																						
 								if (in_array($group_id,$groups) || $m->record->owner_id == $user_id)
 								{
@@ -447,19 +448,19 @@ class Libs extends Component
 										}
 									}
 									$allow = in_array($app->requestedRoute,$mviews);
-								}																
-								
-								if ($allow)
-								{
-									array_push($users,$user_id);
-									$m->record->viewers = implode(",",array_unique($users));
-									$m->record->save();						
-								}																																	
+								}																																																																
 																
 							}
 							else
 							{
 								$allow = true;		
+							}
+							
+							if ($allow)
+							{
+								array_push($users,$user_id);
+								$m->record->viewers = implode(",",array_unique($users));
+								$m->record->save();						
 							}														
 														
 						}
