@@ -87,9 +87,9 @@ class VersionController extends Controller
 						$model->status = true;
 						
 						if (($record_id == null && $version->isNewRecord) || $record_id != null)
-						{																					
+						{														
 							foreach ($version->behaviors as $k=>$b)
-							{
+							{								
 								if ($k === "tree")
 								{																											
 									$lid =  $b->leftAttribute;
@@ -122,7 +122,7 @@ class VersionController extends Controller
 										}
 									}							
 								}								
-							}								
+							}														
 							
 							$res = (!$version->save()?false:$res);
 							if ($record_id != null)
