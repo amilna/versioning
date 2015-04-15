@@ -19,6 +19,11 @@ class Versioning implements BootstrapInterface
 		foreach ($events as $eventName) {
 			Event::on(Controller::className(), $eventName, function ($event) use ($app,$eventName) {				
 				Libs::mkView($app,$eventName,$event);
+				/*
+				print_r($app->requestedAction->ccontroller);
+				die();	
+				$app->db->tablePrefix = $app->db->tablePrefix."tes_";
+				*/ 
 			});																			
 		}
 				

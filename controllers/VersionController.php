@@ -87,11 +87,11 @@ class VersionController extends Controller
 						$model->status = true;
 						
 						if (($record_id == null && $version->isNewRecord) || $record_id != null)
-						{							
+						{																					
 							foreach ($version->behaviors as $k=>$b)
 							{
-								if ($k == "tree")
-								{									
+								if ($k === "tree")
+								{																											
 									$lid =  $b->leftAttribute;
 									$rid =  $b->rightAttribute;
 									$did =  $b->depthAttribute;
