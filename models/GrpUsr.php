@@ -16,12 +16,15 @@ use Yii;
  */
 class GrpUsr extends \yii\db\ActiveRecord
 {
+    public $dynTableName = '{{%versioning_grp_usr}}';    
+    
     /**
      * @inheritdoc
      */
     public static function tableName()
-    {
-        return '{{%versioning_grp_usr}}';
+    {        
+        $mod = new GrpUsr();        
+        return $mod->dynTableName;
     }
 
     /**

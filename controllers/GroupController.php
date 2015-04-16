@@ -57,7 +57,7 @@ class GroupController extends Controller
         
         if (!$allow)
         {
-			$query->andWhere(['{{%versioning_group}}.owner_id'=>Yii::$app->user->id]);
+			$query->andWhere([Group::tableName().'.owner_id'=>Yii::$app->user->id]);
 		}		
 		
 		if (Yii::$app->request->post('hasEditable')) {			

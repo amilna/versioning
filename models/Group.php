@@ -22,12 +22,15 @@ use yii\helpers\ArrayHelper;
  */
 class Group extends \yii\db\ActiveRecord
 {
+    public $dynTableName = '{{%versioning_group}}';    
+    
     /**
      * @inheritdoc
      */
     public static function tableName()
-    {
-        return '{{%versioning_group}}';
+    {        
+        $mod = new Group();        
+        return $mod->dynTableName;
     }
     
     public $memberJson;

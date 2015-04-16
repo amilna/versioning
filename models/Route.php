@@ -18,12 +18,15 @@ use Yii;
  */
 class Route extends \yii\db\ActiveRecord
 {
+    public $dynTableName = '{{%versioning_route}}';    
+    
     /**
      * @inheritdoc
      */
     public static function tableName()
-    {
-        return '{{%versioning_route}}';
+    {        
+        $mod = new Route();        
+        return $mod->dynTableName;
     }
 
     /**

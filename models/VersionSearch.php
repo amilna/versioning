@@ -166,12 +166,12 @@ class VersionSearch extends Version
         
         /* uncomment to sort by relations table on respective column */
 		$dataProvider->sort->attributes['recordModel'] = [			
-			'asc' => ['concat({{%versioning_record}}.model,{{%versioning_record}}.id)' => SORT_ASC],
-			'desc' => ['concat({{%versioning_record}}.model,{{%versioning_record}}.id)' => SORT_DESC],
+			'asc' => ['concat('.Record::tableName().'.model,'.Record::tableName().'.id)' => SORT_ASC],
+			'desc' => ['concat('.Record::tableName().'.model,'.Record::tableName().'.id)' => SORT_DESC],
 		];
 		$dataProvider->sort->attributes['time'] = [			
-			'asc' => ['{{%versioning_route}}.time' => SORT_ASC],
-			'desc' => ['{{%versioning_route}}.time' => SORT_DESC],
+			'asc' => [''.Route::tableName().'.time' => SORT_ASC],
+			'desc' => [''.Route::tableName().'.time' => SORT_DESC],
 		];
 		$dataProvider->sort->attributes['routeUser'] = [			
 			'asc' => [$userClass::tableName().'.username' => SORT_ASC],
@@ -198,13 +198,13 @@ class VersionSearch extends Version
 		{
 			$query->andFilterWhere($p);
 		}
-		$params = self::queryTime([['time','{{%versioning_route}}']]);
+		$params = self::queryTime([['time',Route::tableName()]]);
 		foreach ($params as $p)
 		{
 			$query->andFilterWhere($p);
 		}
 		
-		$query->andFilterWhere(["like","lower(concat({{%versioning_record}}.model,' ',{{%versioning_record}}.record_id))",strtolower($this->recordModel)]);
+		$query->andFilterWhere(["like","lower(concat(".Record::tableName().".model,' ',".Record::tableName().".record_id))",strtolower($this->recordModel)]);
 		$query->andFilterWhere(['like','lower('.$userClass::tableName().'.username)',strtolower($this->routeUser)]);
 				
 		/* example to use search all in field1,field2,field3 or field4 */

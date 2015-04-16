@@ -172,12 +172,12 @@ class RecordSearch extends Record
 			'desc' => [$userClass::tableName().'.username' => SORT_DESC],
 		];
 		$dataProvider->sort->attributes['groupTitle'] = [			
-			'asc' => ['{{%versioning_group}}.title' => SORT_ASC],
-			'desc' => ['{{%versioning_group}}.title' => SORT_DESC],
+			'asc' => [''.Group::tableName().'.title' => SORT_ASC],
+			'desc' => [''.Group::tableName().'.title' => SORT_DESC],
 		];
 		$dataProvider->sort->attributes['recordModel'] = [			
-			'asc' => ['concat({{%versioning_record}}.model,{{%versioning_record}}.id)' => SORT_ASC],
-			'desc' => ['concat({{%versioning_record}}.model,{{%versioning_record}}.id)' => SORT_DESC],
+			'asc' => ['concat('.Record::tableName().'.model,'.Record::tableName().'.id)' => SORT_ASC],
+			'desc' => ['concat('.Record::tableName().'.model,'.Record::tableName().'.id)' => SORT_DESC],
 		];
 		
 		
@@ -205,8 +205,8 @@ class RecordSearch extends Record
 		}	
 		
 		$query->andFilterWhere(['like','lower('.$userClass::tableName().'.username)',strtolower($this->ownerUsername)]);
-		$query->andFilterWhere(['like','lower({{%versioning_group}}.title)',strtolower($this->groupTitle)]);
-		$query->andFilterWhere(["like","lower(concat({{%versioning_record}}.model,' ',{{%versioning_record}}.record_id))",strtolower($this->recordModel)]);
+		$query->andFilterWhere(['like','lower('.Group::tableName().'.title)',strtolower($this->groupTitle)]);
+		$query->andFilterWhere(["like","lower(concat(".Record::tableName().".model,' ',".Record::tableName().".record_id))",strtolower($this->recordModel)]);
 			
 		/* example to use search all in field1,field2,field3 or field4
 		if ($this->term)

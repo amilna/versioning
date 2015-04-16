@@ -48,12 +48,15 @@ class Version extends \yii\db\ActiveRecord
     }
     
     
+    public $dynTableName = '{{%versioning_version}}';    
+    
     /**
      * @inheritdoc
      */
     public static function tableName()
-    {
-        return '{{%versioning_version}}';
+    {        
+        $mod = new Version();        
+        return $mod->dynTableName;
     }
 
     /**

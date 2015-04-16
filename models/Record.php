@@ -22,13 +22,16 @@ use yii\helpers\ArrayHelper;
  */
 class Record extends \yii\db\ActiveRecord
 {
+    public $dynTableName = '{{%versioning_record}}';    
+    
     /**
      * @inheritdoc
      */
     public static function tableName()
-    {
-        return '{{%versioning_record}}';
-    }		
+    {        
+        $mod = new Record();        
+        return $mod->dynTableName;
+    }
 	
     /**
      * @inheritdoc

@@ -53,7 +53,7 @@ class RecordController extends Controller
         
         if (!$allow)
         {
-			$query->andWhere(['{{%versioning_record}}.owner_id'=>Yii::$app->user->id]);
+			$query->andWhere([Record::tableName().'.owner_id'=>Yii::$app->user->id]);
 		}
         
         $dataProvider->pagination = [

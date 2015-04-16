@@ -3,6 +3,7 @@
 namespace amilna\versioning\controllers;
 
 use Yii;
+use amilna\versioning\models\Record;
 use amilna\versioning\models\Version;
 use amilna\versioning\models\VersionSearch;
 use yii\web\Controller;
@@ -160,9 +161,9 @@ class VersionController extends Controller
         {
         
 			$res = Yii::$app->db->createCommand("UPDATE 
-					{{%versioning_record}}
+					".Record::tableName()."
 					SET viewers = concat(viewers,',',".$user_id.")
-					WHERE concat(',',{{%versioning_record}}.viewers,',') not like '%,".$user_id.",%'".($models?" AND model = ANY (array['".str_replace(",","','",$models)."'])":""))
+					WHERE concat(',',".Record::tableName().".viewers,',') not like '%,".$user_id.",%'".($models?" AND model = ANY (array['".str_replace(",","','",$models)."'])":""))
 					->execute();											
         
 		}        
