@@ -73,7 +73,7 @@ class Libs extends Component
 		return $arr;	
 	}
 	
-	public function arrItemIn($string,$array,$defReturn)
+	public static function arrItemIn($string,$array,$defReturn)
 	{					
 		$return = $string;	
 		foreach ($array as $a)
@@ -383,9 +383,9 @@ class Libs extends Component
 				$searchModel = new VersionSearch();
 				$dataProvider = $searchModel->search([]);
 				$query = $dataProvider->query;
-				$query->andWhere(["{{%versioning_version}}.status"=>true])
-					->andWhere("{{%versioning_route}}.route like :route",[":route"=>$rotname."%"])
-					->andWhere(["{{%versioning_record}}.record_id"=>$params]);																	
+				$query->andWhere([Version::tableName().".status"=>true])
+					->andWhere(Route::tableName().".route like :route",[":route"=>$rotname."%"])
+					->andWhere([Record::tableName().".record_id"=>$params]);																	
 				
 				$groups = self::userGroups($user_id);								
 				
@@ -507,12 +507,21 @@ class Libs extends Component
 		
 	}
 	
-	public function userGroups($user_id)
+	public static function userGroups($user_id)
     {		
-		$members = Yii::$app->db->createCommand("SELECT array_agg(group_id) as id FROM ".GrpUsr::tableName()."
+		$dsn = Yii::$app->db->dsn;
+		if (strtolower(substr($dsn,0,5)) == "mysql")
+		{
+			$members = Yii::$app->db->createCommand("SELECT GROUP_CONCAT(group_id) as id FROM ".GrpUsr::tableName()."
 				WHERE user_id = :id AND isdel = 0")->bindValues([":id"=>$user_id])->queryScalar();								
+		}
+		else
+		{	
 		
-		/* kapan2 benerin sql supaya bisajalan juga di mysql pake group_concat */
+			$members = Yii::$app->db->createCommand("SELECT array_agg(group_id) as id FROM ".GrpUsr::tableName()."
+					WHERE user_id = :id AND isdel = 0")->bindValues([":id"=>$user_id])->queryScalar();								
+				
+		}		
 		
 		$groups = json_decode(str_replace(["{","}"],["[","]"],$members));		
 		return ($groups == null?[]:$groups);

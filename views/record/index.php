@@ -84,7 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [	
 				'class' => 'kartik\grid\EditableColumn',
-				'attribute'=>'ownerUsername',
+				'attribute'=>'owner_id',
 				'filterType'=>GridView::FILTER_SELECT2,				
 				'filterWidgetOptions'=>[
 					'data'=>$searchModel->itemAlias('owner'),

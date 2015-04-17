@@ -49,12 +49,14 @@ class RecordController extends Controller
 		else
 		{
 			$allow = in_array(Yii::$app->user->identity->username,$module->admins);
-		}																		                
+		}	
+				
         
         if (!$allow)
         {
 			$query->andWhere([Record::tableName().'.owner_id'=>Yii::$app->user->id]);
 		}
+				
         
         $dataProvider->pagination = [
 			"pageSize"=>20	
@@ -70,16 +72,18 @@ class RecordController extends Controller
 			
 			$posted = current($_POST['RecordSearch']);			
 			$post['Record'] = $posted;												
+						
 			
-			if ($model->owner_id == Yii::$app->user->id)
+			if ($model->owner_id == Yii::$app->user->id || $allow)
 			{			
 				$transaction = Yii::$app->db->beginTransaction();
 				try {				
 					if ($model->load($post)) {													
 						
 						$model->attributes;										
-						$model->owner_id = (isset($posted['ownerUsername'])?$posted['ownerUsername']:$model->owner_id);
+						$model->owner_id = (isset($posted['owner_id'])?$posted['owner_id']:$model->owner_id);
 						$model->group_id = (isset($posted['groupTitle'])?$posted['groupTitle']:$model->group_id);
+						
 						
 						$model->save();	
 						
@@ -98,7 +102,7 @@ class RecordController extends Controller
 							}
 						} 
 						
-						if (isset($posted['ownerUsername'])) {				   
+						if (isset($posted['owner_id'])) {				   
 							$output =  $model->itemAlias('owner',$model->owner_id); // new value for edited td					   
 							$data = [];
 							
