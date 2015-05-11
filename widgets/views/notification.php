@@ -55,6 +55,14 @@ $n = count($dataProvider->getModels());
 											$go = true;
 										}
 									}
+									
+									if (isset($version->isdel))
+									{
+										if ($version->isdel == 1)
+										{
+											$go = false;
+										}	
+									}
 								}
 								
 								$url = array_merge([$widget->route[$modname][0]],$params);
@@ -66,12 +74,20 @@ $n = count($dataProvider->getModels());
 								$url = "#";							
 								if (class_exists ($modname)) {
 									$model = $modname::findOne($mod->record->record_id);
-									if ($model) {
+									if ($model) {										
 										$pk = $model->getPrimaryKey(true);								
 										foreach ($pk as $k=>$v) {}									
 										$route = "//".$paths[0]."/".$paths[1]."/".(isset($views[$modname])?$views[$modname]:$module->defaults["view"]);									
 										$url = [$route,$k=>$v];
 										$go = true;
+										
+										if (isset($model->isdel))
+										{
+											if ($model->isdel == 1)
+											{
+												$go = false;
+											}	
+										}
 									}
 								}	
 							}
