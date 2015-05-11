@@ -38,25 +38,61 @@ $n = count($dataProvider->getModels());
 					{																																	
 						if ($mod->record->record_id != null)
 						{
-							$paths = explode("/",$mod->route->route);
 							$modname = $mod->record->model;
-							$url = "#";							
-							if (class_exists ($modname)) {
-								$model = $modname::findOne($mod->record->record_id);
-								if ($model) {
-									$pk = $model->getPrimaryKey(true);								
-									foreach ($pk as $k=>$v) {}									
-									$route = "//".$paths[0]."/".$paths[1]."/".(isset($views[$modname])?$views[$modname]:$module->defaults["view"]);									
-									$url = [$route,$k=>$v];
+							
+							$go = false;
+							if (isset($widget->route[$modname]))
+							{																
+								$params = ["vrid"=>$mod->record->id];
+								if (isset($widget->route[$modname][1]))
+								{
+									$version = $mod->version;									
+									foreach ($widget->route[$modname][1] as $p)
+									{
+										if (!empty($version->$p))
+										{
+											$params[$p] = $version->$p;
+											$go = true;
+										}
+									}
 								}
-							}	
+								
+								$url = array_merge([$widget->route[$modname][0]],$params);
+							}
+							else
+							{							
+								$paths = explode("/",$mod->route->route);
+								
+								$url = "#";							
+								if (class_exists ($modname)) {
+									$model = $modname::findOne($mod->record->record_id);
+									if ($model) {
+										$pk = $model->getPrimaryKey(true);								
+										foreach ($pk as $k=>$v) {}									
+										$route = "//".$paths[0]."/".$paths[1]."/".(isset($views[$modname])?$views[$modname]:$module->defaults["view"]);									
+										$url = [$route,$k=>$v];
+										$go = true;
+									}
+								}	
+							}
+							
 							$notif = [
 								0 => '<i class="fa fa-warning text-red"></i>',
 								1=> '<i class="fa fa-check-circle text-green"></i>',
 								2=> '<i class="fa fa-exclamation-circle text-yellow"></i>',
 							];
 							
-							echo "<li>".Html::a($notif[$mod->type]." ".$mod->itemAlias("notif",$mod->type),$url,["title"=>$mod->itemAlias("notif",$mod->type)])."</li>";							
+							if ($go)
+							{
+								echo "<li>".Html::a($notif[$mod->type]." ".$mod->itemAlias("notif",$mod->type),$url,["title"=>$mod->itemAlias("notif",$mod->type)])."</li>";							
+							}
+							else
+							{								
+								$users = explode(",",$mod->record->viewers);
+								array_push($users,Yii::$app->user->id);
+								$mod->record->viewers = implode(",",array_unique($users));																
+								$mod->record->save();														
+							}
 							
 						}
 					}												

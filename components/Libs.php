@@ -376,22 +376,30 @@ class Libs extends Component
 					array_push($params,$p);	
 				}
 			}
+						
 			
-			if (count($params) > 0)
+			if (count($params) > 0 || isset($action_param["vrid"]))
 			{
-								
 				$searchModel = new VersionSearch();
 				$dataProvider = $searchModel->search([]);
 				$query = $dataProvider->query;
-				$query->andWhere([Version::tableName().".status"=>true])
-					->andWhere(Route::tableName().".route like :route",[":route"=>$rotname."%"])
-					->andWhere([Record::tableName().".record_id"=>$params]);																	
+				$query->andWhere([Version::tableName().".status"=>true]);
+									
+				if (isset($action_param["vrid"]))
+				{					
+					$query->andWhere([Record::tableName().".id"=>$action_param["vrid"]]);
+				}
+				else
+				{	
+					//$query->andWhere(Route::tableName().".route like :route",[":route"=>$rotname."%"]);
+					$query->andWhere([Record::tableName().".record_id"=>$params]);
+				}	
 				
-				$groups = self::userGroups($user_id);								
+				$groups = self::userGroups($user_id);
 				
 				try {												
 					
-					$allowall = count($dataProvider->getModels()) > 0?false:true;
+					$allowall = count($dataProvider->getModels()) > 0?false:true;												
 									
 					foreach ($dataProvider->getModels() as $mod)
 					{															
@@ -399,7 +407,7 @@ class Libs extends Component
 						$v = $mod->version;					
 						
 						if ($v)
-						{											
+						{
 							$allow = false;
 							if (isset(Yii::$app->user->identity->isAdmin))
 							{
@@ -408,7 +416,7 @@ class Libs extends Component
 							else
 							{
 								$allow = in_array(Yii::$app->user->identity->username,$module->admins);
-							}															
+							}
 							
 							$inarr = false;
 							foreach ($v->getPrimaryKey(true) as $k=>$p)
@@ -419,8 +427,8 @@ class Libs extends Component
 									{
 										$inarr = true;	
 									}
-								}							
-							}																												
+								}
+							}
 							
 							$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);
 							$group_id = $m->record->group_id;														
@@ -459,19 +467,18 @@ class Libs extends Component
 							if ($allow)
 							{
 								array_push($users,$user_id);
-								$m->record->viewers = implode(",",array_unique($users));
+								$m->record->viewers = implode(",",array_unique($users));																
 								$m->record->save();						
 							}														
 														
 						}
 						else
 						{							
-							$allow = true;		
+							$allow = true;								
 						}
 												
 						$allowall = !$allowall?$allow:true;							
-					}										
-										
+					}																				
 					
 					if (!$allowall)
 					{						

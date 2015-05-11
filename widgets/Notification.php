@@ -7,10 +7,14 @@ use yii\base\Widget;
 use yii\helpers\Json;
 
 use amilna\versioning\models\VersionSearch;
+use amilna\versioning\models\Version;
+use amilna\versioning\models\Record;
+use amilna\versioning\models\Route;
 
 class Notification extends Widget
 {    	
 	public $models = [];
+	public $route = []; // model => [route,[params]]
 	public $viewPath = '@amilna/versioning/widgets/views/notification';
 	
 	private $bundle;
@@ -30,26 +34,26 @@ class Notification extends Widget
 		$searchModel = new VersionSearch();
 		$dataProvider = $searchModel->search([]);
 		$query = $dataProvider->query;
-		$query->andWhere(["{{%versioning_version}}.status"=>true])
-			->andWhere("{{%versioning_record}}.record_id is not null");
+		$query->andWhere([Version::tableName().".status"=>true])
+			->andWhere(Record::tableName().".record_id is not null");
 				
 		if (count($this->models) > 0)
 		{										
-			$query->andWhere(["{{%versioning_record}}.model"=>$this->models])
-				->andWhere("{{%versioning_record}}.filter_viewers = false");
+			$query->andWhere([Record::tableName().".model"=>$this->models])
+				->andWhere(Record::tableName().".filter_viewers = false");
 		}				
 		
 		if ($user_id > 0)
 		{	
-			$query->andWhere("concat(',',{{%versioning_record}}.viewers,',') not like '%,".$user_id.",%'")
-				->andWhere("{{%versioning_record}}.filter_viewers = false OR ({{%versioning_record}}.filter_viewers = true AND ({{%versioning_record}}.owner_id = :uid OR {{%versioning_record}}.group_id in (".implode(",",$groups).")) )",[":uid"=>$user_id]);
+			$query->andWhere("concat(',',".Record::tableName().".viewers,',') not like '%,".$user_id.",%'")
+				->andWhere(Record::tableName().".filter_viewers = false OR (".Record::tableName().".filter_viewers = true AND (".Record::tableName().".owner_id = :uid OR ".Record::tableName().".group_id in (".implode(",",$groups).")) )",[":uid"=>$user_id]);
 		}
 		else
 		{
 			$query->limit(10);		
 		}											
 		
-		$query->orderBy('{{%versioning_route}}.time DESC,{{%versioning_version}}.id DESC');
+		$query->orderBy(Route::tableName().".time DESC,".Version::tableName().".id DESC");
 						
 		$script = "		
 		" . PHP_EOL;
