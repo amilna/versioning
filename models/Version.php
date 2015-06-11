@@ -197,14 +197,17 @@ class Version extends \yii\db\ActiveRecord
 			$parents = $this->parents()->orderBy("depth")->all();		
 			
 			$attributes = [];
-			foreach ($parents as $p)
+			if (is_array($parents))
 			{
-				$attr = json_decode($p->record_attributes);
-				if (is_array($attr) || is_object($attr))
+				foreach ($parents as $p)
 				{
-					foreach ($attr as $a=>$v)
+					$attr = json_decode($p->record_attributes);
+					if (is_array($attr) || is_object($attr))
 					{
-						$attributes[$a] = $v;
+						foreach ($attr as $a=>$v)
+						{
+							$attributes[$a] = $v;
+						}
 					}
 				}
 			}

@@ -362,6 +362,7 @@ class Libs extends Component
 		$module = $app->getModule("versioning");
 		$controller = $app->requestedAction->controller;
 		$rotname = (isset($controller->module->module)?$controller->module->id."/":"").$controller->id;
+		
 		$user_id = $app->user->id;
 		//$action_param = $controller->actionParams;												
 		$action_param = $app->request->queryParams;		
