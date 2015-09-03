@@ -128,8 +128,19 @@ class VersionController extends Controller
 							$res = (!$version->save()?false:$res);
 							if ($record_id != null)
 							{
-								$model->record->record_id = $version->id;								
-								$res = (!$model->record->save()?false:$res);
+								$pk = $version->getPrimaryKey(true);
+								if (is_array($pk))
+								{
+									foreach ($pk as $pk_key=>$pk_val)
+									{										
+										$model->record->record_id = $version->$pk_key;								
+										$res = (!$model->record->save()?false:$res);
+									}
+								}
+								else
+								{
+									$res = false;	
+								}
 							}
 						}					
 						
