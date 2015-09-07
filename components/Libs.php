@@ -59,7 +59,7 @@ class Libs extends Component
 		return $arr;		
 	}
 	
-	public function verObj($obj1,$obj2)
+	public static function verObj($obj1,$obj2)
     {			
 		$arr = [];
 		foreach ($obj1 as $a=>$v)
