@@ -531,7 +531,7 @@ class Libs extends Component
 				
 		}		
 		
-		$groups = json_decode(str_replace(["{","}"],["[","]"],$members));		
+		$groups = json_decode("[".str_replace(["{","}"],"",$members)."]");		
 		return ($groups == null?[]:$groups);
 	}		
 		
