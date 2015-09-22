@@ -385,14 +385,14 @@ class Libs extends Component
 				$dataProvider = $searchModel->search([]);
 				$query = $dataProvider->query;
 				$query->andWhere([Version::tableName().".status"=>true]);
-									
+				
+				$query->andWhere(Route::tableName().".route like :route",[":route"=>$rotname."%"]);					
 				if (isset($action_param["vrid"]))
 				{					
 					$query->andWhere([Record::tableName().".id"=>$action_param["vrid"]]);
 				}
 				else
-				{	
-					//$query->andWhere(Route::tableName().".route like :route",[":route"=>$rotname."%"]);
+				{						
 					$query->andWhere([Record::tableName().".record_id"=>$params]);
 				}	
 				
@@ -400,7 +400,7 @@ class Libs extends Component
 				
 				try {												
 					
-					$allowall = count($dataProvider->getModels()) > 0?false:true;												
+					$allowall = count($dataProvider->getModels()) > 0?false:true;																						
 									
 					foreach ($dataProvider->getModels() as $mod)
 					{															
