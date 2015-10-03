@@ -23,16 +23,34 @@ class Versioning implements BootstrapInterface
 		}
 				
 		
-		$events = [ActiveRecord::EVENT_AFTER_INSERT, ActiveRecord::EVENT_BEFORE_UPDATE, ActiveRecord::EVENT_BEFORE_DELETE];
+		$events = [ActiveRecord::EVENT_BEFORE_INSERT, ActiveRecord::EVENT_BEFORE_UPDATE, ActiveRecord::EVENT_BEFORE_DELETE];
+				
+		$res0 = false;		
+		foreach ($events as $eventName) {
+			Event::on(ActiveRecord::className(), $eventName, function ($event) use ($app,$eventName) {				
+				$model = $event->sender;		
+				$modname = get_class($model);
+				$verses = [];
+				if ($app->session->has('Versioning'))
+				{
+					$verses = $app->session->get('Versioning');									
+				}
+				$verses[$modname] = $model->oldAttributes;			
+				$app->session->set('Versioning',$verses);				
+			});
+		}
+				
+		$events = [ActiveRecord::EVENT_AFTER_INSERT, ActiveRecord::EVENT_AFTER_UPDATE,ActiveRecord::EVENT_AFTER_DELETE];
 				
 		$res0 = false;		
 		foreach ($events as $eventName) {
 			Event::on(ActiveRecord::className(), $eventName, function ($event) use ($app,$eventName) {				
 				$model = $event->sender;				
-				$res0 = Libs::mkVersion($app,$eventName,$model);
+				$res0 = Libs::mkVersion($app,$eventName,$model);								
 			});
-		}
-		
+		}		
+				
+		/*
 		if ($res0)
 		{		
 			$events = [ActiveRecord::EVENT_AFTER_UPDATE,ActiveRecord::EVENT_AFTER_DELETE];
@@ -64,6 +82,7 @@ class Versioning implements BootstrapInterface
 				});																			
 			}				
 		}
+		*/ 
 		
     }
 }

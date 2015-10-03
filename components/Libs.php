@@ -87,7 +87,8 @@ class Libs extends Component
 	}
     
     public static function mkVersion($app,$eventName,$model,$routeString=false)
-    {
+    {				
+		
 		$module = $app->getModule("versioning");
 								
 		$nomodels = array_merge(['amilna\versioning\models\Record','amilna\versioning\models\Version','amilna\versioning\models\Route'],$module->nomodels);		
@@ -139,6 +140,36 @@ class Libs extends Component
 		$res = true;		
 		if ($stat)
 		{									
+			/*
+			if ($eventName == \yii\db\ActiveRecord::EVENT_AFTER_UPDATE)
+			{
+				
+				$old = false;
+				if (Yii::$app->session->has('Versioning'))
+				{
+					$verses = Yii::$app->session->get('Versioning');				
+					if (isset($verses[$modname]))
+					{
+						$old = $verses[$modname];
+					}
+				}
+				print_r($old);
+				print_r($model->attributes);
+				print_r($model);
+				die($eventName);
+			}
+			*/ 
+			
+			$old = $model->oldAttributes;
+			if (Yii::$app->session->has('Versioning'))
+			{
+				$verses = Yii::$app->session->get('Versioning');				
+				if (isset($verses[$modname]))
+				{
+					$old = $verses[$modname];
+				}
+			}			
+			
 			$version = new Version();
 			if ($version->itemAlias("type",$eventName,true) == 1)
 			{								
@@ -151,7 +182,7 @@ class Libs extends Component
 			}	
 			else
 			{
-				$arr = self::verObj($model->oldAttributes,$model->attributes);
+				$arr = self::verObj($old,$model->attributes);
 				$atr = json_encode($arr);
 			}										
 			
@@ -237,8 +268,9 @@ class Libs extends Component
 						
 						if ($rid != null && !$origin)
 						{								
+							
 							$version0 = new Version();
-							$version0->record_attributes = json_encode($model->oldAttributes);	
+							$version0->record_attributes = json_encode($old);	
 							$version0->isdel = 0;
 							$version0->record_id = $record->id;
 							$version0->route_id = $route->id;
@@ -248,6 +280,7 @@ class Libs extends Component
 							$res = (!$version0->save()?false:$res);
 							
 							$version->prependTo($version0);
+							 
 						}
 						elseif ($rid == null)
 						{
@@ -308,7 +341,7 @@ class Libs extends Component
 						
 						$rts = $version->route_ids == null?[]:json_decode($version->route_ids);
 						array_push($rts,$route->id);
-						$version->route_ids = json_encode(array_unique($rts));																					
+						$version->route_ids = json_encode(array_unique($rts));																											
 					}																		
 					
 					$version->isdel = 0;
@@ -338,7 +371,7 @@ class Libs extends Component
 					
 					
 					if ($res)
-					{
+					{												
 						$transaction->commit();
 						$res = [$route->id,$model->attributes];
 					}

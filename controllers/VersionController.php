@@ -39,28 +39,28 @@ class VersionController extends Controller
 				
 				$versions = VersionSearch::find()			
 						->andWhere("route_id = :route_id OR concat(',',substring(route_ids from 2 for (length(route_ids)-2)),',') LIKE :lk",[":route_id"=>$route_id,":lk"=>'%,'.$route_id.',%'])
+						->andWhere("type = :type",[":type"=>$model->type])
 						->all();								
 										
 				$res = true;		
 				$transaction = Yii::$app->db->beginTransaction();
 				try {
-					foreach ($versions as $model)
+					foreach ($versions as $mv)
 					{
-						$record_id = $model->record->record_id;
-						$modelClass = $model->record->model;
+						$record_id = $mv->record->record_id;
+						$modelClass = $mv->record->model;
 						
 						if ($record_id != null)
-						{
-							$origin = Version::findOne(["record_id"=>$model->record_id,"status"=>true]);
-							$origin->status = ($origin->id != $model->id?false:true);
-							$origin->save();												
+						{														
+							$sql = "UPDATE ".Version::tableName()." set status = false where record_id = :reid and status = true";
+							Yii::$app->db->createCommand($sql)->bindValues([":reid"=>$mv->record_id])->execute();
 						}	
 						else
 						{
-							$done = Version::findOne(["record_id"=>$model->record_id,"route_id"=>$route_id]);
+							$done = Version::findOne(["record_id"=>$mv->record_id,"route_id"=>$route_id]);
 							if (!$done)
 							{
-								$recs = Version::findAll(["record_id"=>$model->record_id]);							
+								$recs = Version::findAll(["record_id"=>$mv->record_id]);							
 								foreach ($recs as $r)
 								{
 									$sql = "";
@@ -84,8 +84,8 @@ class VersionController extends Controller
 							}
 						}				
 						
-						$version = $model->version;
-						$model->status = true;
+						$version = $mv->version;
+						$mv->status = true;												
 						
 						if (($record_id == null && $version->isNewRecord) || $record_id != null)
 						{														
@@ -133,8 +133,8 @@ class VersionController extends Controller
 								{
 									foreach ($pk as $pk_key=>$pk_val)
 									{										
-										$model->record->record_id = $version->$pk_key;								
-										$res = (!$model->record->save()?false:$res);
+										$mv->record->record_id = $version->$pk_key;								
+										$res = (!$mv->record->save()?false:$res);
 									}
 								}
 								else
@@ -144,21 +144,21 @@ class VersionController extends Controller
 							}
 						}					
 						
-						$res = (!$model->save()?false:$res);
+						$res = (!$mv->save()?false:$res);
 					}
-					
+										
 					if ($res)
-					{
+					{						
 						$transaction->commit();
 					}
 					else
-					{
+					{						
 						$transaction->rollBack();
 					}
-				} catch (Exception $e) {
+				} catch (Exception $e) {					
 					$transaction->rollBack();				
 				}
-			}																					
+			}																						
 		}
 		
 		return $this->redirect(['index']);
