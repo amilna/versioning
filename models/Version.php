@@ -164,6 +164,12 @@ class Version extends \yii\db\ActiveRecord
         return $this->hasOne(Route::className(), ['id' => 'route_id']);
     }        
     
+    public function getGroup()
+    {
+        return $this->hasMany(GrpUsr::className(), ['group_id' => 'group_id'])
+            ->via('record');            
+    }
+    
     public function getVersion()
     {
 		$modelClass = $this->record->model;

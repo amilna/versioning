@@ -6,6 +6,7 @@ use Yii;
 use amilna\versioning\models\Record;
 use amilna\versioning\models\Version;
 use amilna\versioning\models\VersionSearch;
+use amilna\versioning\models\GrpUsr;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -193,6 +194,24 @@ class VersionController extends Controller
         $req = Yii::$app->request->queryParams;                                        
         if ($term) { $req[basename(str_replace("\\","/",get_class($searchModel)))]["term"] = $term;}        
         $dataProvider = $searchModel->search($req);				                
+        $query = $dataProvider->query;
+        
+        $module = Yii::$app->getModule("versioning");
+        $allow = false;
+        if (isset(Yii::$app->user->identity->isAdmin))
+		{
+			$allow = Yii::$app->user->identity->isAdmin;
+		}
+		else
+		{
+			$allow = in_array(Yii::$app->user->identity->username,$module->admins);
+		}																		
+        
+        if (!$allow)
+        {
+			$query->joinWith(['record','group']);
+			$query->andWhere(GrpUsr::tableName().'.user_id = :uid OR '.Record::tableName().'.owner_id = :uid',[':uid'=>Yii::$app->user->id]);
+		}
                 
         $dataProvider->pagination = [
 			"pageSize"=>10	
