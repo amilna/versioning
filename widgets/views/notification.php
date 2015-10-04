@@ -79,6 +79,8 @@ foreach ($dataProvider->getModels() as $mod)
 			0 => '<i class="fa fa-warning text-red"></i>',
 			1=> '<i class="fa fa-check-circle text-green"></i>',
 			2=> '<i class="fa fa-exclamation-circle text-yellow"></i>',
+			3=> '<i class="fa fa-exclamation-circle text-yellow"></i>',
+			4 => '<i class="fa fa-warning text-red"></i>',
 		];
 		
 		if ($go)
