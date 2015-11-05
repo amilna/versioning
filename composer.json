@@ -14,6 +14,11 @@
         "yiisoft/yii2": "*",
         "sebastian/diff": "*",
         "creocoder/yii2-nested-sets": "*",
+        "kartik-v/yii2-mpdf": "*",
+		"kartik-v/yii2-widgets": "*",
+		"kartik-v/yii2-date-range": "*",
+		"kartik-v/yii2-grid": "*",
+		"kartik-v/yii2-editable": "*",
 	"amilna/yii2-yap": "dev-master"
     },
     "autoload": {

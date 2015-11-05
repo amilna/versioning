@@ -434,7 +434,7 @@ class Libs extends Component
 				try {												
 					
 					$allowall = count($dataProvider->getModels()) > 0?false:true;																						
-									
+					
 					foreach ($dataProvider->getModels() as $mod)
 					{															
 						$m = $mod;
