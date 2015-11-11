@@ -112,6 +112,8 @@ class Version extends \yii\db\ActiveRecord
 						0 => Yii::t("app","{model} record #{id} has deleted by {username}",["model"=>$model,"id"=>$id,"username"=>$username]),
 						1=> Yii::t("app","New {model} has created by {username}",["model"=>$model,"username"=>$username]),
 						2=> Yii::t("app","{model} record #{id} has changed by {username}",["model"=>$model,"id"=>$id,"username"=>$username]),
+						3=> Yii::t("app","{model} record #{id} has changed by {username}",["model"=>$model,"id"=>$id,"username"=>$username]),
+						4 => Yii::t("app","{model} record #{id} has deleted by {username}",["model"=>$model,"id"=>$id,"username"=>$username]),
 					],
 						
 		];				
