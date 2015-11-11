@@ -405,7 +405,7 @@ class Libs extends Component
 			$params = [];
 			foreach ($action_param as $p)
 			{								
-				if (!is_float($p) && is_numeric($p))
+				if (!is_float($p) && is_numeric($p) && strpos($p,'.') == false)
 				{
 					array_push($params,$p);	
 				}
