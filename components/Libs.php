@@ -423,11 +423,21 @@ class Libs extends Component
 				if (isset($action_param["vrid"]))
 				{					
 					$query->andWhere([Record::tableName().".id"=>$action_param["vrid"]]);
+					$record = Record::findOne($action_param["vrid"]);
 				}
 				else
 				{						
 					$query->andWhere([Record::tableName().".record_id"=>$params]);
+					$record = Record::findOne(['record_id'=>$params]);
 				}	
+				
+				if ($record)
+				{					
+					$users = $record->viewers == null?[]:explode(",",$record->viewers);
+					array_push($users,$user_id);
+					$record->viewers = implode(",",array_unique($users));																
+					$record->save();										
+				}
 				
 				$groups = self::userGroups($user_id);
 				
@@ -496,15 +506,7 @@ class Libs extends Component
 							else
 							{
 								$allow = true;		
-							}
-							
-							if ($allow)
-							{
-								array_push($users,$user_id);
-								$m->record->viewers = implode(",",array_unique($users));																
-								$m->record->save();						
-							}														
-														
+							}																												
 						}
 						else
 						{							
