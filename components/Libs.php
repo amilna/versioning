@@ -405,7 +405,7 @@ class Libs extends Component
 			$params = [];
 			foreach ($action_param as $p)
 			{								
-				if (!is_float($p) && is_numeric($p) && strpos($p,'.') == false)
+				if (!is_float($p) && is_numeric($p))
 				{
 					array_push($params,$p);	
 				}
@@ -422,22 +422,12 @@ class Libs extends Component
 				$query->andWhere(Route::tableName().".route like :route",[":route"=>$rotname."%"]);					
 				if (isset($action_param["vrid"]))
 				{					
-					$query->andWhere([Record::tableName().".id"=>$action_param["vrid"]]);
-					$record = Record::findOne($action_param["vrid"]);
+					$query->andWhere([Record::tableName().".id"=>$action_param["vrid"]]);					
 				}
 				else
 				{						
-					$query->andWhere([Record::tableName().".record_id"=>$params]);
-					$record = Record::findOne(['record_id'=>$params]);
-				}	
-				
-				if ($record)
-				{					
-					$users = $record->viewers == null?[]:explode(",",$record->viewers);
-					array_push($users,$user_id);
-					$record->viewers = implode(",",array_unique($users));																
-					$record->save();										
-				}
+					$query->andWhere([Record::tableName().".record_id"=>$params]);					
+				}									
 				
 				$groups = self::userGroups($user_id);
 				
@@ -500,6 +490,15 @@ class Libs extends Component
 										}
 									}
 									$allow = in_array($app->requestedRoute,$mviews);
+								}
+								
+								if ($allow)
+								{																		
+									
+									$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);
+									array_push($users,$user_id);
+									$m->record->viewers = implode(",",array_unique($users));																
+									$m->record->save();																			
 								}																																																																
 																
 							}
