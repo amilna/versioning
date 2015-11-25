@@ -423,22 +423,32 @@ class Libs extends Component
 				if (isset($action_param["vrid"]))
 				{					
 					$query->andWhere([Record::tableName().".id"=>$action_param["vrid"]]);					
+					$record = Record::findOne($action_param["vrid"]);
 				}
 				else
 				{						
 					$query->andWhere([Record::tableName().".record_id"=>$params]);					
+					$record = Record::findOne(['record_id'=>$params]);
 				}									
+				
+				if ($record)
+				{					
+					$users = $record->viewers == null?[]:explode(",",$record->viewers);
+					array_push($users,$user_id);
+					$record->viewers = implode(",",array_unique($users));																
+					$record->save();														
+				}
 				
 				$groups = self::userGroups($user_id);
 				
 				try {												
 					
-					$allowall = count($dataProvider->getModels()) > 0?false:true;																						
+					$allowall = count($dataProvider->getModels()) > 0?false:true;																																
 					
 					foreach ($dataProvider->getModels() as $mod)
 					{															
 						$m = $mod;
-						$v = $mod->version;					
+						$v = $mod->version;																	
 						
 						if ($v)
 						{
@@ -465,7 +475,9 @@ class Libs extends Component
 							}
 							
 							$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);
-							$group_id = $m->record->group_id;														
+							$group_id = $m->record->group_id;																					
+							
+							
 														
 							if ($inarr && !$allow)						
 							{																
@@ -492,13 +504,14 @@ class Libs extends Component
 									$allow = in_array($app->requestedRoute,$mviews);
 								}
 								
+								
+								
 								if ($allow)
-								{																		
-									
+								{																												
 									$users = $m->record->viewers == null?[]:explode(",",$m->record->viewers);
 									array_push($users,$user_id);
 									$m->record->viewers = implode(",",array_unique($users));																
-									$m->record->save();																			
+									$m->record->save();																												
 								}																																																																
 																
 							}
